@@ -292,7 +292,7 @@ loadSplitWasm: async function (buildUrl, wasmFile, partCount) {
     try {
         // Load and combine .part01 -> .part04
         const wasmBuffer =
-            await loadSplitWasm(
+            await this.loadSplitWasm(
                 buildUrl,
                 WASM_FILE,
                 WASM_PARTS
