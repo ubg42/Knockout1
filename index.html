@@ -500,20 +500,7 @@ startLoading: async function () {
         // Set this to false if you want to decouple this synchronization from
         // happening inside the engine, and you would instead like to size up
         // the canvas DOM size and WebGL render target sizes yourself.
-        const matchWebGLToCanvasSize = "";
-        console.log("matchWebGLToCanvasSize", matchWebGLToCanvasSize);
-        if (!this.isEmpty(matchWebGLToCanvasSize)) {
-            config.matchWebGLToCanvasSize = this.toBoolean(matchWebGLToCanvasSize);
-        }
-
-        // If you would like all file writes inside Unity Application.persistentDataPath
-        // directory to automatically persist so that the contents are remembered when
-        // the user revisits the site the next time, uncomment the following line:
-        const autoSyncPersistentDataPath = "";
-        console.log("autoSyncPersistentDataPath", autoSyncPersistentDataPath);
-        if (!this.isEmpty(autoSyncPersistentDataPath)) {
-            config.autoSyncPersistentDataPath = this.toBoolean(autoSyncPersistentDataPath);
-        }
+       
         // This autosyncing is currently not the default behavior to avoid regressing
         // existing user projects that might rely on the earlier manual
         // JS_FileSystem_Sync() behavior, but in future Unity version, this will be
