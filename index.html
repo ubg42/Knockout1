@@ -213,6 +213,11 @@
         // Update aspect ratio on start.
         updateAspectRatio();
     },
+        const wasmBuffer = await loadSplitWasm(
+    "Build/game.wasm",
+    4
+);
+
     async function loadSplitWasm(baseUrl, parts) {
     const responses = await Promise.all(
         Array.from({ length: parts }, (_, i) =>
@@ -242,10 +247,6 @@
     return combined.buffer;
 },
    
-    const wasmBuffer = await loadSplitWasm(
-    "Build/game.wasm",
-    4
-);
 
 const wasmModule = await WebAssembly.compile(wasmBuffer);
 
