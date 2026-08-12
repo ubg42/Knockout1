@@ -212,17 +212,18 @@ const unityApp = {
         // Update aspect ratio on start.
         updateAspectRatio();
     },
-  async function loadSplitWasm(buildUrl, wasmFile, partCount) {
+  
+loadSplitWasm: async function (buildUrl, wasmFile, partCount) {
     const parts = [];
 
     for (let i = 1; i <= partCount; i++) {
         const partName =
             wasmFile + ".part" + String(i).padStart(2, "0");
 
-        console.log("Loading WASM part:", partName);
+        console.log("Loading:", partName);
 
         const response = await fetch(
-            buildUrl + "/" + encodeURIComponent(partName)
+            buildUrl + "/" + partName
         );
 
         if (!response.ok) {
@@ -232,7 +233,9 @@ const unityApp = {
             );
         }
 
-        parts.push(new Uint8Array(await response.arrayBuffer()));
+        parts.push(
+            new Uint8Array(await response.arrayBuffer())
+        );
     }
 
     let totalSize = 0;
@@ -257,7 +260,7 @@ const unityApp = {
     );
 
     return wasm;
-}
+},
 
     startLoading: function () {
         const canvas = document.querySelector("#unity-canvas");
