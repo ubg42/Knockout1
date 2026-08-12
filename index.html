@@ -50,12 +50,9 @@ const unityApp = {
     },
 
 loadSplitWasm: async function (buildUrl, wasmFile, partCount) {
-
     const parts = [];
 
     for (let i = 1; i <= partCount; i++) {
-
-        // .part01, .part02, .part03, .part04
         const partName =
             wasmFile + ".part" + String(i).padStart(2, "0");
 
@@ -74,53 +71,64 @@ loadSplitWasm: async function (buildUrl, wasmFile, partCount) {
             );
         }
 
-        const bytes =
-            new Uint8Array(
-                await response.arrayBuffer()
-            );
+        const bytes = new Uint8Array(
+            await response.arrayBuffer()
+        );
 
         console.log(
-            partName,
-            "size:",
-            bytes.length
+            partName + " size: " + bytes.length
         );
 
         parts.push(bytes);
     }
 
-    /*
-     * Calculate total size
-     */
-    const totalSize = parts.reduce(
-        function (total, part) {
-            return total + part.length;
-        },
-        0
-    );
+    let totalSize = 0;
+
+    for (const part of parts) {
+        totalSize += part.length;
+    }
 
     console.log(
         "Total reconstructed WASM size:",
         totalSize
     );
 
-    /*
-     * Combine parts
-     */
-    const combined =
-        new Uint8Array(totalSize);
+    const combined = new Uint8Array(totalSize);
 
     let offset = 0;
 
     for (const part of parts) {
-
-        combined.set(
-            part,
-            offset
-        );
-
+        combined.set(part, offset);
         offset += part.length;
     }
 
+    const header = [...combined.slice(0, 8)]
+        .map(function (x) {
+            return x.toString(16).padStart(2, "0");
+        })
+        .join(" ");
+
+    console.log(
+        "Combined WASM header:",
+        header
+    );
+
+    if (
+        combined[0] !== 0x00 ||
+        combined[1] !== 0x61 ||
+        combined[2] !== 0x73 ||
+        combined[3] !== 0x6d
+    ) {
+        throw new Error(
+            "Combined file is NOT WASM.\n\n" +
+            "Header: " + header
+        );
+    }
+
+    console.log("SUCCESS: Valid WASM!");
+
+    return combined;
+},
     /*
      * Check WASM header
      */
