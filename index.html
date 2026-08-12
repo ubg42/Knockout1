@@ -41,150 +41,21 @@ loadSplitWasm: async function (buildUrl, wasmFile, partCount) {
     const parts = [];
 
     for (let i = 1; i <= partCount; i++) {
-        const partName =
-            wasmFile + ".part" + String(i).padStart(2, "0");
+        const partName = wasmFile + ".part" + String(i).padStart(2, "0");
 
         console.log("Loading:", partName);
 
-        const response = await fetch(
-            buildUrl + "/" + partName
-        );
+        const response = await fetch(buildUrl + "/" + partName);
 
         if (!response.ok) {
-            throw new Error(
-                "Failed to load " +
-                partName +
-                " (" +
-                response.status +
-                ")"
-            );
+            throw new Error("Failed to load " + partName + " (" + response.status + ")");
         }
 
-        const buffer = await response.arrayBuffer();
-        const part = new Uint8Array(buffer);
-
-        console.log(
-            partName + " first bytes:",
-            [...part.slice(0, 8)]
-                .map(function (x) {
-                    return x.toString(16).padStart(2, "0");
-                })
-                .join(" ")
-        );
-
-        parts.push(part);
+        const data = await response.arrayBuffer();
+        parts.push(new Uint8Array(data));
     }
 
-    let totalSize = 0;
-
-    for (const part of parts) {
-        totalSize += part.byteLength;
-    }
-
-    const wasm = new Uint8Array(totalSize);
-
-    let offset = 0;
-
-    for (const part of parts) {
-        wasm.set(part, offset);
-        offset += part.byteLength;
-    }
-
-    console.log(
-        "Combined WASM size:",
-        wasm.byteLength
-    );
-
-    console.log(
-        "Combined WASM header:",
-        [...wasm.slice(0, 8)]
-            .map(function (x) {
-                return x.toString(16).padStart(2, "0");
-            })
-            .join(" ")
-    );
-
-    if (
-        wasm[0] !== 0x00 ||
-        wasm[1] !== 0x61 ||
-        wasm[2] !== 0x73 ||
-        wasm[3] !== 0x6d
-    ) {
-        throw new Error(
-            "Combined file is NOT valid WASM. Header: " +
-            [...wasm.slice(0, 8)]
-                .map(function (x) {
-                    return x.toString(16).padStart(2, "0");
-                })
-                .join(" ")
-        );
-    }
-
-    return wasm;
-},
-
-        const buffer = await response.arrayBuffer();
-        const part = new Uint8Array(buffer);
-
-        console.log(
-            partName,
-            "first bytes:",
-            [...part.slice(0, 8)]
-                .map(x => x.toString(16).padStart(2, "0"))
-                .join(" ")
-        );
-
-        parts.push(part);
-    }
-
-    let totalSize = 0;
-
-    for (const part of parts) {
-        totalSize += part.byteLength;
-    }
-
-    const wasm = new Uint8Array(totalSize);
-
-    let offset = 0;
-
-    for (const part of parts) {
-        wasm.set(part, offset);
-        offset += part.byteLength;
-    }
-
-    console.log(
-        "Combined WASM size:",
-        wasm.byteLength
-    );
-
-    console.log(
-        "Combined WASM header:",
-        [...wasm.slice(0, 8)]
-            .map(x => x.toString(16).padStart(2, "0"))
-            .join(" ")
-    );
-
-    // Valid WASM files begin with:
-    // 00 61 73 6d
-    if (
-        wasm[0] !== 0x00 ||
-        wasm[1] !== 0x61 ||
-        wasm[2] !== 0x73 ||
-        wasm[3] !== 0x6d
-    ) {
-        throw new Error(
-            "The combined file is NOT a valid WASM file.\n" +
-            "Header: " +
-            [...wasm.slice(0, 8)]
-                .map(x => x.toString(16).padStart(2, "0"))
-                .join(" ")
-        );
-    }
-
-    return wasm;
-},
-
-        let totalSize = 0;
+   let totalSize = 0;
 
         for (const part of parts) {
             totalSize += part.byteLength;
