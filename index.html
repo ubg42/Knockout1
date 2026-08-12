@@ -359,6 +359,16 @@ startLoading: async function () {
 
     } catch (error) {
         console.error("Failed to load split WASM:", error);
+		
+		            showBanner: (msg, type) => {
+                switch (type) {
+                    case 'error': {
+                        console.error(msg);
+                        break;
+                    }
+                    default: {
+                        console.warn(msg);
+                        break;
     }
 }
 
