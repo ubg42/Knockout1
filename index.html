@@ -37,7 +37,7 @@ const unityApp = {
         // ...
     },
 
-   loadSplitWasm: async function (buildUrl, wasmFile, partCount) {
+loadSplitWasm: async function (buildUrl, wasmFile, partCount) {
     const parts = [];
 
     for (let i = 1; i <= partCount; i++) {
@@ -46,8 +46,9 @@ const unityApp = {
 
         console.log("Loading:", partName);
 
-        const response =
-            await fetch(buildUrl + "/" + partName);
+        const response = await fetch(
+            buildUrl + "/" + partName
+        );
 
         if (!response.ok) {
             throw new Error(
@@ -58,6 +59,69 @@ const unityApp = {
                 ")"
             );
         }
+
+        const buffer = await response.arrayBuffer();
+        const part = new Uint8Array(buffer);
+
+        console.log(
+            partName + " first bytes:",
+            [...part.slice(0, 8)]
+                .map(function (x) {
+                    return x.toString(16).padStart(2, "0");
+                })
+                .join(" ")
+        );
+
+        parts.push(part);
+    }
+
+    let totalSize = 0;
+
+    for (const part of parts) {
+        totalSize += part.byteLength;
+    }
+
+    const wasm = new Uint8Array(totalSize);
+
+    let offset = 0;
+
+    for (const part of parts) {
+        wasm.set(part, offset);
+        offset += part.byteLength;
+    }
+
+    console.log(
+        "Combined WASM size:",
+        wasm.byteLength
+    );
+
+    console.log(
+        "Combined WASM header:",
+        [...wasm.slice(0, 8)]
+            .map(function (x) {
+                return x.toString(16).padStart(2, "0");
+            })
+            .join(" ")
+    );
+
+    if (
+        wasm[0] !== 0x00 ||
+        wasm[1] !== 0x61 ||
+        wasm[2] !== 0x73 ||
+        wasm[3] !== 0x6d
+    ) {
+        throw new Error(
+            "Combined file is NOT valid WASM. Header: " +
+            [...wasm.slice(0, 8)]
+                .map(function (x) {
+                    return x.toString(16).padStart(2, "0");
+                })
+                .join(" ")
+        );
+    }
+
+    return wasm;
+},
 
         const buffer = await response.arrayBuffer();
         const part = new Uint8Array(buffer);
