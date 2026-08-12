@@ -24,7 +24,7 @@
 </div>
 <!-- Unity loader script -->
 <script>
-  const unityApp = {
+const unityApp = {
 
     applyCommonFixes: function () {
         // Disable unwanted page scroll.
@@ -214,31 +214,6 @@
         updateAspectRatio();
     },
 
-    for (const response of responses) {
-        if (!response.ok) {
-            throw new Error(`Failed to load ${response.url}: ${response.status}`);
-        }
-    }
-
-    const buffers = await Promise.all(
-        responses.map(r => r.arrayBuffer())
-    );
-
-    const totalSize = buffers.reduce((sum, b) => sum + b.byteLength, 0);
-    const combined = new Uint8Array(totalSize);
-
-    let offset = 0;
-    for (const buffer of buffers) {
-        combined.set(new Uint8Array(buffer), offset);
-        offset += buffer.byteLength;
-    }
-
-    return combined.buffer;
-},
-   
-
-const wasmModule = await WebAssembly.compile(wasmBuffer);
-
     startLoading: function () {
         const canvas = document.querySelector("#unity-canvas");
         const loadingBar = document.querySelector("#unity-loading-bar");
@@ -247,12 +222,12 @@ const wasmModule = await WebAssembly.compile(wasmBuffer);
         const buildUrl = "Build";
 var WASM_FILE = "knockout[8]-mirraSDK[5.1.2].wasm";
 var WASM_PARTS = 4;
+
         const loaderUrl = buildUrl + "/knockout[8]-mirraSDK[5.1.2].loader.js";
         const config = {
             arguments: [],
             dataUrl: buildUrl + "/knockout[8]-mirraSDK[5.1.2].data.br",
             frameworkUrl: buildUrl + "/knockout[8]-mirraSDK[5.1.2].framework.js.br",
-
             streamingAssetsUrl: "StreamingAssets",
             companyName: "DefaultCompany",
             productName: "knockout",
