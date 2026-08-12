@@ -422,17 +422,7 @@ startLoading: async function () {
 
 
 
-    isEmpty: function (value) {
-        return value === undefined || value === null || value === "";
-    },
 
-    toBoolean: function (value) {
-        return value === true || value === "true" || value === 1 || value === "1" || value === "True";
-    },
-
-    isNumber: function (value) {
-        return typeof value === 'number' && !isNaN(value);
-    },
 
     toNumber: function (value) {
         function handleMathExpression(str) {
