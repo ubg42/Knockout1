@@ -212,6 +212,52 @@ const unityApp = {
         // Update aspect ratio on start.
         updateAspectRatio();
     },
+  async function loadSplitWasm(buildUrl, wasmFile, partCount) {
+    const parts = [];
+
+    for (let i = 1; i <= partCount; i++) {
+        const partName =
+            wasmFile + ".part" + String(i).padStart(2, "0");
+
+        console.log("Loading WASM part:", partName);
+
+        const response = await fetch(
+            buildUrl + "/" + encodeURIComponent(partName)
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                "Failed to load " + partName +
+                " (" + response.status + ")"
+            );
+        }
+
+        parts.push(new Uint8Array(await response.arrayBuffer()));
+    }
+
+    let totalSize = 0;
+
+    for (const part of parts) {
+        totalSize += part.byteLength;
+    }
+
+    const wasm = new Uint8Array(totalSize);
+
+    let offset = 0;
+
+    for (const part of parts) {
+        wasm.set(part, offset);
+        offset += part.byteLength;
+    }
+
+    console.log(
+        "Combined WASM:",
+        wasm.byteLength,
+        "bytes"
+    );
+
+    return wasm;
+}
 
     startLoading: function () {
         const canvas = document.querySelector("#unity-canvas");
@@ -221,30 +267,125 @@ const unityApp = {
         const buildUrl = "Build";
         var WASM_FILE = "knockout[8]-mirraSDK[5.1.2].wasm";
         var WASM_PARTS = 4;
-        const loaderUrl = buildUrl + "/knockout[8]-mirraSDK[5.1.2].loader.js";
+    startLoading: async function () {
+    const canvas = document.querySelector("#unity-canvas");
+    const loadingBar = document.querySelector("#unity-loading-bar");
+    const progressBarFull =
+        document.querySelector("#unity-progress-bar-full");
+
+    const buildUrl = "Build";
+
+    var WASM_FILE =
+        "knockout[8]-mirraSDK[5.1.2].wasm";
+
+    var WASM_PARTS = 4;
+
+    const loaderUrl =
+        buildUrl +
+        "/knockout[8]-mirraSDK[5.1.2].loader.js";
+
+    loadingBar.style.display = "block";
+
+    try {
+        // Load and combine .part01 -> .part04
+        const wasmBuffer =
+            await loadSplitWasm(
+                buildUrl,
+                WASM_FILE,
+                WASM_PARTS
+            );
+
+        // Create a temporary URL containing the complete WASM
+        const wasmBlob = new Blob(
+            [wasmBuffer],
+            { type: "application/wasm" }
+        );
+
+        const wasmUrl =
+            URL.createObjectURL(wasmBlob);
+
+        console.log("WASM Blob URL:", wasmUrl);
+
         const config = {
             arguments: [],
-            dataUrl: buildUrl + "/knockout[8]-mirraSDK[5.1.2].data.br",
-            frameworkUrl: buildUrl + "/knockout[8]-mirraSDK[5.1.2].framework.js.br",
-            codeUrl: buildUrl + "/knockout[8]-mirraSDK[5.1.2].wasm.br",
+
+            dataUrl:
+                buildUrl +
+                "/knockout[8]-mirraSDK[5.1.2].data.br",
+
+            frameworkUrl:
+                buildUrl +
+                "/knockout[8]-mirraSDK[5.1.2].framework.js.br",
+
+            // This is now the combined WASM
+            codeUrl: wasmUrl,
+
             streamingAssetsUrl: "StreamingAssets",
+
             companyName: "DefaultCompany",
             productName: "knockout",
             productVersion: "0.1.0",
+
             showBanner: (msg, type) => {
-                switch (type) {
-                    case 'error': {
-                        console.error(msg);
-                        break;
-                    }
-                    default: {
-                        console.warn(msg);
-                        break;
-                    }
+                if (type === "error") {
+                    console.error(msg);
+                } else {
+                    console.warn(msg);
                 }
-            },
+            }
         };
 
+        const script =
+            document.createElement("script");
+
+        script.src = loaderUrl;
+
+        script.onload = () => {
+            createUnityInstance(
+                canvas,
+                config,
+                (progress) => {
+                    progressBarFull.style.width =
+                        100 * progress + "%";
+                }
+            )
+            .then((unityInstance) => {
+                loadingBar.style.display = "none";
+
+                // Free the Blob URL when Unity is finished loading
+                // Remove this if Unity needs to reload the WASM later.
+                // URL.revokeObjectURL(wasmUrl);
+
+            })
+            .catch((message) => {
+                console.error(message);
+                alert(message);
+            });
+        };
+
+        script.onerror = () => {
+            throw new Error(
+                "Failed to load Unity loader: " +
+                loaderUrl
+            );
+        };
+
+        document.body.appendChild(script);
+
+    } catch (error) {
+        console.error(
+            "Failed to load split WASM:",
+            error
+        );
+
+        loadingBar.style.display = "none";
+
+        alert(
+            "Failed to load WASM:\n" +
+            error.message
+        );
+    }
+},
         // By default Unity keeps WebGL canvas render target size matched with
         // the DOM size of the canvas element (scaled by window.devicePixelRatio)
         // Set this to false if you want to decouple this synchronization from
