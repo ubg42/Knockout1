@@ -49,58 +49,111 @@ const unityApp = {
         // No aspect ratio configured.
     },
 
-    loadSplitWasm: async function (buildUrl, wasmFile, partCount) {
+loadSplitWasm: async function (buildUrl, wasmFile, partCount) {
 
-        const parts = [];
+    const parts = [];
 
-        for (let i = 1; i <= partCount; i++) {
+    for (let i = 1; i <= partCount; i++) {
 
-            const partName =
-                wasmFile + ".part" + String(i).padStart(2, "0");
+        // .part01, .part02, .part03, .part04
+        const partName =
+            wasmFile + ".part" + String(i).padStart(2, "0");
 
-            const url =
-                buildUrl + "/" + partName;
+        const url = buildUrl + "/" + partName;
 
-            console.log("Loading:", url);
+        console.log("Loading:", url);
 
-            const response = await fetch(url);
+        const response = await fetch(url);
 
-            if (!response.ok) {
-                throw new Error(
-                    "Failed to load " +
-                    partName +
-                    " (" +
-                    response.status +
-                    ")"
-                );
-            }
-
-            const buffer =
-                await response.arrayBuffer();
-
-            const part =
-                new Uint8Array(buffer);
-
-            console.log(
+        if (!response.ok) {
+            throw new Error(
+                "Failed to load " +
                 partName +
-                " size:",
-                part.byteLength
+                " HTTP " +
+                response.status
             );
-
-            console.log(
-                partName +
-                " first bytes:",
-                [...part.slice(0, 8)]
-                    .map(function (x) {
-                        return x
-                            .toString(16)
-                            .padStart(2, "0");
-                    })
-                    .join(" ")
-            );
-
-            parts.push(part);
         }
+
+        const bytes =
+            new Uint8Array(
+                await response.arrayBuffer()
+            );
+
+        console.log(
+            partName,
+            "size:",
+            bytes.length
+        );
+
+        parts.push(bytes);
+    }
+
+    /*
+     * Calculate total size
+     */
+    const totalSize = parts.reduce(
+        function (total, part) {
+            return total + part.length;
+        },
+        0
+    );
+
+    console.log(
+        "Total reconstructed WASM size:",
+        totalSize
+    );
+
+    /*
+     * Combine parts
+     */
+    const combined =
+        new Uint8Array(totalSize);
+
+    let offset = 0;
+
+    for (const part of parts) {
+
+        combined.set(
+            part,
+            offset
+        );
+
+        offset += part.length;
+    }
+
+    /*
+     * Check WASM header
+     */
+    const header =
+        [...combined.slice(0, 8)]
+            .map(function (x) {
+                return x
+                    .toString(16)
+                    .padStart(2, "0");
+            })
+            .join(" ");
+
+    console.log(
+        "Combined header:",
+        header
+    );
+
+    if (
+        combined[0] !== 0x00 ||
+        combined[1] !== 0x61 ||
+        combined[2] !== 0x73 ||
+        combined[3] !== 0x6d
+    ) {
+        throw new Error(
+            "The reconstructed file is not a WASM file.\n\n" +
+            "Header: " + header
+        );
+    }
+
+    console.log("WASM reconstructed successfully!");
+
+    return combined;
+},
 
         /*
          * Calculate combined size.
