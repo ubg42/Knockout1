@@ -188,23 +188,154 @@ const unityApp = {
         updateAspectRatio();
     },
 
-    startLoading: function () {
-        const canvas = document.querySelector("#unity-canvas");
-        const loadingBar = document.querySelector("#unity-loading-bar");
-        const progressBarFull = document.querySelector("#unity-progress-bar-full");
+startLoading: async function () {
+    const canvas = document.querySelector("#unity-canvas");
+    const loadingBar = document.querySelector("#unity-loading-bar");
+    const progressBarFull = document.querySelector("#unity-progress-bar-full");
 
-        const buildUrl = "Build";
-        const loaderUrl = buildUrl + "/knockout[8]-mirraSDK[5.1.2].loader.js";
+    const buildUrl = "Build";
+
+    const wasmName = "knockout[8]-mirraSDK[5.1.2].wasm";
+    const wasmParts = 4;
+
+    const loaderUrl =
+        buildUrl + "/knockout[8]-mirraSDK[5.1.2].loader.js";
+
+    // --------------------------------------------------
+    // Load and combine WASM parts
+    // --------------------------------------------------
+
+    async function loadSplitWasm() {
+        const parts = [];
+
+        for (let i = 1; i <= wasmParts; i++) {
+            const partName =
+                wasmName + ".part" + String(i).padStart(2, "0");
+
+            const url = buildUrl + "/" + partName;
+
+            console.log("Loading WASM part:", url);
+
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                throw new Error(
+                    "Failed to load " +
+                    partName +
+                    " (" +
+                    response.status +
+                    " " +
+                    response.statusText +
+                    ")"
+                );
+            }
+
+            const buffer = await response.arrayBuffer();
+
+            console.log(
+                partName,
+                "loaded:",
+                buffer.byteLength,
+                "bytes"
+            );
+
+            parts.push(new Uint8Array(buffer));
+        }
+
+        // Calculate total size
+        let totalSize = 0;
+
+        for (const part of parts) {
+            totalSize += part.byteLength;
+        }
+
+        // Combine all parts
+        const combined = new Uint8Array(totalSize);
+
+        let offset = 0;
+
+        for (const part of parts) {
+            combined.set(part, offset);
+            offset += part.byteLength;
+        }
+
+        console.log(
+            "Combined WASM:",
+            combined.byteLength,
+            "bytes"
+        );
+
+        // Make a browser URL containing the complete WASM
+        const blob = new Blob(
+            [combined],
+            { type: "application/wasm" }
+        );
+
+        return URL.createObjectURL(blob);
+    }
+
+    try {
+        const wasmUrl = await loadSplitWasm();
+
+        console.log("WASM blob URL:", wasmUrl);
+
         const config = {
             arguments: [],
-            dataUrl: buildUrl + "/knockout[8]-mirraSDK[5.1.2].data.br",
-            frameworkUrl: buildUrl + "/knockout[8]-mirraSDK[5.1.2].framework.js.br",
-            codeUrl: buildUrl + "/knockout[8]-mirraSDK[5.1.2].wasm.br",
+
+            dataUrl:
+                buildUrl +
+                "/knockout[8]-mirraSDK[5.1.2].data.br",
+
+            frameworkUrl:
+                buildUrl +
+                "/knockout[8]-mirraSDK[5.1.2].framework.js.br",
+
+            // IMPORTANT:
+            // Unity now receives the combined WASM
+            codeUrl: wasmUrl,
+
             streamingAssetsUrl: "StreamingAssets",
+
             companyName: "DefaultCompany",
             productName: "knockout",
             productVersion: "0.1.0",
+
             showBanner: (msg, type) => {
+                switch (type) {
+                    case "error":
+                        console.error(msg);
+                        break;
+
+                    default:
+                        console.warn(msg);
+                        break;
+                }
+            }
+        };
+
+        loadingBar.style.display = "block";
+
+        createUnityInstance(
+            canvas,
+            config,
+            (progress) => {
+                progressBarFull.style.width =
+                    (100 * progress) + "%";
+            }
+        ).then((unityInstance) => {
+            loadingBar.style.display = "none";
+
+            window.unityInstance = unityInstance;
+
+            console.log("Unity loaded!");
+        }).catch((message) => {
+            console.error("Unity loading failed:", message);
+        });
+
+    } catch (error) {
+        console.error("Failed to load split WASM:", error);
+		
+		            showBanner: (msg, type) => {
                 switch (type) {
                     case 'error': {
                         console.error(msg);
@@ -213,10 +344,8 @@ const unityApp = {
                     default: {
                         console.warn(msg);
                         break;
-                    }
-                }
-            },
-        };
+    }
+}
 
         // By default Unity keeps WebGL canvas render target size matched with
         // the DOM size of the canvas element (scaled by window.devicePixelRatio)
@@ -266,58 +395,10 @@ const unityApp = {
         document.body.appendChild(script);
     },
 
-    isMobile: function () {
-        return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    },
 
-    isEmpty: function (value) {
-        return value === undefined || value === null || value === "";
-    },
 
-    toBoolean: function (value) {
-        return value === true || value === "true" || value === 1 || value === "1" || value === "True";
-    },
 
-    isNumber: function (value) {
-        return typeof value === 'number' && !isNaN(value);
-    },
 
-    toNumber: function (value) {
-        function handleMathExpression(str) {
-            const mathMatch = str.match(/^(\d*\.?\d+)\s*([+\-*/])\s*(\d*\.?\d+)$/);
-            if (!mathMatch) return null;
-
-            const a = parseFloat(mathMatch[1]);
-            const operator = mathMatch[2];
-            const b = parseFloat(mathMatch[3]);
-
-            const operators = {
-                '+': function (a, b) { return a + b; },
-                '-': function (a, b) { return a - b; },
-                '*': function (a, b) { return a * b; },
-                '/': function (a, b) { return b !== 0 ? a / b : NaN; }
-            };
-            return operators[operator](a, b);
-        }
-
-        function convertToNumber(str) {
-            const num = parseFloat(str);
-            return isNaN(num) ? 0 : num;
-        }
-
-        // Handle basic type checks first.
-        if (this.isNumber(value)) return value;
-        if (this.isEmpty(value)) return 0;
-
-        // Convert to string and handle empty case.
-        var str = String(value).trim();
-        if (str === '') return 0;
-
-        // Try math expression or simple number conversion.
-        return handleMathExpression(str) || convertToNumber(str);
-    },
-
-};
 
 // Apply common fixes.
 unityApp.applyCommonFixes();
