@@ -508,11 +508,7 @@ startLoading: async function () {
 
         // To lower canvas resolution on mobile devices to gain some
         // performance, uncomment the following line:
-        const devicePixelRatio = this.toNumber("");
-        console.log("devicePixelRatio", devicePixelRatio);
-        if (this.isNumber(devicePixelRatio)) {
-            config.devicePixelRatio = this.toNumber(devicePixelRatio);
-        }
+
 
         loadingBar.style.display = "block";
         const script = document.createElement("script");
