@@ -1,10 +1,11 @@
 const unityApp = {
-
     applyCommonFixes: function () {
         // Disable unwanted page scroll.
-        window.addEventListener("wheel", (event) => event.preventDefault(), {
-            passive: false,
-        });
+        window.addEventListener(
+            "wheel",
+            (event) => event.preventDefault(),
+            { passive: false }
+        );
 
         // Disable unwanted key events.
         window.addEventListener("keydown", (event) => {
@@ -13,92 +14,126 @@ const unityApp = {
             }
         });
 
-        // Disable context menu appearing after right click outside of the unity canvas.
-        window.addEventListener('contextmenu', (event) => event.preventDefault());
-        document.addEventListener('contextmenu', (event) => event.preventDefault());
+        // Disable context menu.
+        window.addEventListener("contextmenu", (event) =>
+            event.preventDefault()
+        );
+
+        document.addEventListener("contextmenu", (event) =>
+            event.preventDefault()
+        );
     },
 
     tryRotationLock() {
         const PORTRAIT_ONLY = "";
         let isPortraitLocked = false;
+
         if (!unityApp.isEmpty(PORTRAIT_ONLY)) {
             isPortraitLocked = unityApp.toBoolean(PORTRAIT_ONLY);
         }
-        console.log("isPortraitLocked", PORTRAIT_ONLY, isPortraitLocked);
+
+        console.log(
+            "isPortraitLocked",
+            PORTRAIT_ONLY,
+            isPortraitLocked
+        );
 
         const LANDSCAPE_ONLY = "";
         let isLandscapeLocked = false;
+
         if (!unityApp.isEmpty(LANDSCAPE_ONLY)) {
             isLandscapeLocked = unityApp.toBoolean(LANDSCAPE_ONLY);
         }
-        console.log("isLandscapeLocked", LANDSCAPE_ONLY, isLandscapeLocked);
+
+        console.log(
+            "isLandscapeLocked",
+            LANDSCAPE_ONLY,
+            isLandscapeLocked
+        );
 
         if (isPortraitLocked && isLandscapeLocked) {
-            throw new Error("Both portrait and landscape lock cannot be enabled at the same time.");
+            throw new Error(
+                "Both portrait and landscape lock cannot be enabled at the same time."
+            );
         }
 
         const root = document.createElement("div");
 
         // Stretch to full screen.
-        root.style.background = 'rgb(10, 10, 10, 0.7)';
-        root.style.display = 'flex';
-        root.style.position = 'fixed';
-        root.style.top = '0';
-        root.style.left = '0';
-        root.style.width = '100%';
-        root.style.height = '100%';
+        root.style.background = "rgb(10, 10, 10, 0.7)";
+        root.style.display = "flex";
+        root.style.position = "fixed";
+        root.style.top = "0";
+        root.style.left = "0";
+        root.style.width = "100%";
+        root.style.height = "100%";
 
-        // Create blur background effect.
-        root.style.webkitBackfaceVisibility = 'hidden';
-        root.style.webkitPerspective = '1000';
-        root.style.webkitTransform = 'translate3d(0,0,0)';
-        root.style.webkitTransform = 'translateZ(0)';
-        root.style.backfaceVisibility = 'hidden';
-        root.style.perspective = '1000';
-        root.style.transform = 'translate3d(0,0,0)';
-        root.style.transform = 'translateZ(0)';
-        root.style.backdropFilter = 'blur(10px)';
+        // Blur background effect.
+        root.style.webkitBackfaceVisibility = "hidden";
+        root.style.webkitPerspective = "1000";
+        root.style.webkitTransform = "translateZ(0)";
+        root.style.backfaceVisibility = "hidden";
+        root.style.perspective = "1000";
+        root.style.transform = "translateZ(0)";
+        root.style.backdropFilter = "blur(10px)";
 
-        // Create intuitive image instruction for the user.
-        const image = document.createElement('img');
+        // Create rotation instruction image.
+        const image = document.createElement("img");
+
         if (isPortraitLocked) {
-            image.src = 'TemplateData/portrait-only.png';
+            image.src = "TemplateData/portrait-only.png";
+        } else if (isLandscapeLocked) {
+            image.src = "TemplateData/landscape-only.png";
         }
-        else if (isLandscapeLocked) {
-            image.src = 'TemplateData/landscape-only.png';
-        }
-        image.style.display = 'flex';
-        image.style.width = '100px';
-        image.style.height = '100px';
-        image.style.margin = 'auto';
-        root.appendChild(image);
 
+        image.style.display = "flex";
+        image.style.width = "100px";
+        image.style.height = "100px";
+        image.style.margin = "auto";
+
+        root.appendChild(image);
         document.body.appendChild(root);
 
         function updateRotationLock() {
-            let display = 'none';
+            let display = "none";
+
             if (unityApp.isMobile()) {
                 if (isPortraitLocked && isLandscapeLocked) {
                     root.style.display = display;
                     return;
                 }
+
                 if (isPortraitLocked) {
-                    display = window.innerHeight < window.innerWidth ? 'flex' : 'none';
-                }
-                else if (isLandscapeLocked) {
-                    display = window.innerHeight > window.innerWidth ? 'flex' : 'none';
+                    display =
+                        window.innerHeight < window.innerWidth
+                            ? "flex"
+                            : "none";
+                } else if (isLandscapeLocked) {
+                    display =
+                        window.innerHeight > window.innerWidth
+                            ? "flex"
+                            : "none";
                 }
             }
+
             root.style.display = display;
         }
 
-        // Subscribe to window and document events.
+        // Subscribe to events.
         window.addEventListener("load", updateRotationLock);
         window.addEventListener("resize", updateRotationLock);
-        document.addEventListener("readystatechange", updateRotationLock);
-        document.addEventListener("DOMContentLoaded", updateRotationLock);
 
-        // Update rotation lock on start.
+        document.addEventListener(
+            "readystatechange",
+            updateRotationLock
+        );
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            updateRotationLock
+        );
+
+        // Update on start.
         updateRotationLock();
     },
 
@@ -107,21 +142,29 @@ const unityApp = {
         const mobileLandscapeAspectRatio = "";
         const desktopAspectRatio = "";
 
-        const isMobilePortraitLocked = !this.isEmpty(mobilePortraitAspectRatio);
-        const isMobileLandscapeLocked = !this.isEmpty(mobileLandscapeAspectRatio);
-        const isDesktopLocked = !this.isEmpty(desktopAspectRatio);
+        const isMobilePortraitLocked =
+            !this.isEmpty(mobilePortraitAspectRatio);
 
-        console.log('tryLockAspectRatio', {
-            mobilePortraitAspectRatio: mobilePortraitAspectRatio,
-            mobileLandscapeAspectRatio: mobileLandscapeAspectRatio,
-            desktopAspectRatio: desktopAspectRatio,
-            isMobilePortraitLocked: isMobilePortraitLocked,
-            isMobileLandscapeLocked: isMobileLandscapeLocked,
-            isDesktopLocked: isDesktopLocked
+        const isMobileLandscapeLocked =
+            !this.isEmpty(mobileLandscapeAspectRatio);
+
+        const isDesktopLocked =
+            !this.isEmpty(desktopAspectRatio);
+
+        console.log("tryLockAspectRatio", {
+            mobilePortraitAspectRatio,
+            mobileLandscapeAspectRatio,
+            desktopAspectRatio,
+            isMobilePortraitLocked,
+            isMobileLandscapeLocked,
+            isDesktopLocked
         });
 
-        const container = document.querySelector("#unity-container");
-        const canvas = document.querySelector("#unity-canvas");
+        const container =
+            document.querySelector("#unity-container");
+
+        const canvas =
+            document.querySelector("#unity-canvas");
 
         function centerCanvas() {
             canvas.style.margin = "auto";
@@ -134,150 +177,104 @@ const unityApp = {
         function resetAspectRatio() {
             canvas.style.width = "100%";
             canvas.style.height = "100%";
+
             centerCanvas();
         }
 
         function isPortraitMode() {
             const containerWidth = container.clientWidth;
             const containerHeight = container.clientHeight;
+
             return containerHeight > containerWidth;
         }
 
         function recalculateAspectRatio(aspectRatio) {
             const containerWidth = container.clientWidth;
             const containerHeight = container.clientHeight;
+
             if (containerWidth / containerHeight > aspectRatio) {
-                canvas.style.width = Math.floor(containerHeight * aspectRatio) + "px";
+                canvas.style.width =
+                    Math.floor(containerHeight * aspectRatio) + "px";
+
                 canvas.style.height = "100%";
-            }
-            else {
+            } else {
                 canvas.style.width = "100%";
-                canvas.style.height = Math.floor(containerWidth / aspectRatio) + "px";
+
+                canvas.style.height =
+                    Math.floor(containerWidth / aspectRatio) + "px";
             }
         }
 
         function updateAspectRatio() {
             resetAspectRatio();
+
             if (unityApp.isMobile()) {
                 if (isPortraitMode()) {
                     if (isMobilePortraitLocked) {
-                        recalculateAspectRatio(unityApp.toNumber(mobilePortraitAspectRatio));
+                        recalculateAspectRatio(
+                            unityApp.toNumber(
+                                mobilePortraitAspectRatio
+                            )
+                        );
                     }
-                }
-                else {
+                } else {
                     if (isMobileLandscapeLocked) {
-                        recalculateAspectRatio(unityApp.toNumber(mobileLandscapeAspectRatio));
+                        recalculateAspectRatio(
+                            unityApp.toNumber(
+                                mobileLandscapeAspectRatio
+                            )
+                        );
                     }
                 }
-            }
-            else {
+            } else {
                 if (isDesktopLocked) {
-                    recalculateAspectRatio(unityApp.toNumber(desktopAspectRatio));
+                    recalculateAspectRatio(
+                        unityApp.toNumber(desktopAspectRatio)
+                    );
                 }
             }
+
             centerCanvas();
         }
 
-        // Subscribe to window and document events.
+        // Subscribe to events.
         window.addEventListener("load", updateAspectRatio);
         window.addEventListener("resize", updateAspectRatio);
-        document.addEventListener("readystatechange", updateAspectRatio);
-        document.addEventListener("DOMContentLoaded", updateAspectRatio);
 
-        // Update aspect ratio on start.
+        document.addEventListener(
+            "readystatechange",
+            updateAspectRatio
+        );
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            updateAspectRatio
+        );
+
+        // Update on start.
         updateAspectRatio();
     },
 
-startLoading: async function () {
-    const canvas = document.querySelector("#unity-canvas");
-    const loadingBar = document.querySelector("#unity-loading-bar");
-    const progressBarFull = document.querySelector("#unity-progress-bar-full");
+    startLoading: function () {
+        const canvas =
+            document.querySelector("#unity-canvas");
 
-    const buildUrl = "Build";
+        const loadingBar =
+            document.querySelector("#unity-loading-bar");
 
-    const wasmName = "knockout[8]-mirraSDK[5.1.2].wasm";
-    const wasmParts = 4;
+        const progressBarFull =
+            document.querySelector("#unity-progress-bar-full");
 
-    const loaderUrl =
-        buildUrl + "/knockout[8]-mirraSDK[5.1.2].loader.js";
+        const buildUrl = "Build";
 
-    // --------------------------------------------------
-    // Load and combine WASM parts
-    // --------------------------------------------------
+        const WASM_FILE =
+            "knockout[8]-mirraSDK[5.1.2].wasm";
 
-    async function loadSplitWasm() {
-        const parts = [];
+        const WASM_PARTS = 4;
 
-        for (let i = 1; i <= wasmParts; i++) {
-            const partName =
-                wasmName + ".part" + String(i).padStart(2, "0");
-
-            const url = buildUrl + "/" + partName;
-
-            console.log("Loading WASM part:", url);
-
-            const response = await fetch(url);
-
-            if (!response.ok) {
-                throw new Error(
-                    "Failed to load " +
-                    partName +
-                    " (" +
-                    response.status +
-                    " " +
-                    response.statusText +
-                    ")"
-                );
-            }
-
-            const buffer = await response.arrayBuffer();
-
-            console.log(
-                partName,
-                "loaded:",
-                buffer.byteLength,
-                "bytes"
-            );
-
-            parts.push(new Uint8Array(buffer));
-        }
-
-        // Calculate total size
-        let totalSize = 0;
-
-        for (const part of parts) {
-            totalSize += part.byteLength;
-        }
-
-        // Combine all parts
-        const combined = new Uint8Array(totalSize);
-
-        let offset = 0;
-
-        for (const part of parts) {
-            combined.set(part, offset);
-            offset += part.byteLength;
-        }
-
-        console.log(
-            "Combined WASM:",
-            combined.byteLength,
-            "bytes"
-        );
-
-        // Make a browser URL containing the complete WASM
-        const blob = new Blob(
-            [combined],
-            { type: "application/wasm" }
-        );
-
-        return URL.createObjectURL(blob);
-    }
-
-    try {
-        const wasmUrl = await loadSplitWasm();
-
-        console.log("WASM blob URL:", wasmUrl);
+        const loaderUrl =
+            buildUrl +
+            "/knockout[8]-mirraSDK[5.1.2].loader.js";
 
         const config = {
             arguments: [],
@@ -289,10 +286,6 @@ startLoading: async function () {
             frameworkUrl:
                 buildUrl +
                 "/knockout[8]-mirraSDK[5.1.2].framework.js.br",
-
-            // IMPORTANT:
-            // Unity now receives the combined WASM
-            codeUrl: wasmUrl,
 
             streamingAssetsUrl: "StreamingAssets",
 
@@ -313,92 +306,155 @@ startLoading: async function () {
             }
         };
 
-        loadingBar.style.display = "block";
-
-        createUnityInstance(
-            canvas,
-            config,
-            (progress) => {
-                progressBarFull.style.width =
-                    (100 * progress) + "%";
-            }
-        ).then((unityInstance) => {
-            loadingBar.style.display = "none";
-
-            window.unityInstance = unityInstance;
-
-            console.log("Unity loaded!");
-        }).catch((message) => {
-            console.error("Unity loading failed:", message);
-        });
-
-    } catch (error) {
-        console.error("Failed to load split WASM:", error);
-		
-		            showBanner: (msg, type) => {
-                switch (type) {
-                    case 'error': {
-                        console.error(msg);
-                        break;
-                    }
-                    default: {
-                        console.warn(msg);
-                        break;
-    }
-}
-
-        // By default Unity keeps WebGL canvas render target size matched with
-        // the DOM size of the canvas element (scaled by window.devicePixelRatio)
-        // Set this to false if you want to decouple this synchronization from
-        // happening inside the engine, and you would instead like to size up
-        // the canvas DOM size and WebGL render target sizes yourself.
         const matchWebGLToCanvasSize = "";
-        console.log("matchWebGLToCanvasSize", matchWebGLToCanvasSize);
+
+        console.log(
+            "matchWebGLToCanvasSize",
+            matchWebGLToCanvasSize
+        );
+
         if (!this.isEmpty(matchWebGLToCanvasSize)) {
-            config.matchWebGLToCanvasSize = this.toBoolean(matchWebGLToCanvasSize);
+            config.matchWebGLToCanvasSize =
+                this.toBoolean(matchWebGLToCanvasSize);
         }
 
-        // If you would like all file writes inside Unity Application.persistentDataPath
-        // directory to automatically persist so that the contents are remembered when
-        // the user revisits the site the next time, uncomment the following line:
         const autoSyncPersistentDataPath = "";
-        console.log("autoSyncPersistentDataPath", autoSyncPersistentDataPath);
-        if (!this.isEmpty(autoSyncPersistentDataPath)) {
-            config.autoSyncPersistentDataPath = this.toBoolean(autoSyncPersistentDataPath);
-        }
-        // This autosyncing is currently not the default behavior to avoid regressing
-        // existing user projects that might rely on the earlier manual
-        // JS_FileSystem_Sync() behavior, but in future Unity version, this will be
-        // expected to change.
 
-        // To lower canvas resolution on mobile devices to gain some
-        // performance, uncomment the following line:
-        const devicePixelRatio = this.toNumber("");
-        console.log("devicePixelRatio", devicePixelRatio);
+        console.log(
+            "autoSyncPersistentDataPath",
+            autoSyncPersistentDataPath
+        );
+
+        if (!this.isEmpty(autoSyncPersistentDataPath)) {
+            config.autoSyncPersistentDataPath =
+                this.toBoolean(autoSyncPersistentDataPath);
+        }
+
+        const devicePixelRatio =
+            this.toNumber("");
+
+        console.log(
+            "devicePixelRatio",
+            devicePixelRatio
+        );
+
         if (this.isNumber(devicePixelRatio)) {
-            config.devicePixelRatio = this.toNumber(devicePixelRatio);
+            config.devicePixelRatio =
+                this.toNumber(devicePixelRatio);
         }
 
         loadingBar.style.display = "block";
-        const script = document.createElement("script");
-        script.src = loaderUrl;
-        script.onload = () => {
-            createUnityInstance(canvas, config, (progress) => {
-                progressBarFull.style.width = 100 * progress + "%";
-            }).then((unityInstance) => {
-                loadingBar.style.display = "none";
 
-            }).catch((message) => {
-                alert(message);
-            });
+        const script =
+            document.createElement("script");
+
+        script.src = loaderUrl;
+
+        script.onload = () => {
+            createUnityInstance(
+                canvas,
+                config,
+                (progress) => {
+                    progressBarFull.style.width =
+                        100 * progress + "%";
+                }
+            )
+                .then((unityInstance) => {
+                    loadingBar.style.display = "none";
+                })
+                .catch((message) => {
+                    alert(message);
+                });
         };
+
         document.body.appendChild(script);
     },
 
+    isMobile: function () {
+        return /iPhone|iPad|iPod|Android/i.test(
+            navigator.userAgent
+        );
+    },
 
+    isEmpty: function (value) {
+        return (
+            value === undefined ||
+            value === null ||
+            value === ""
+        );
+    },
 
+    toBoolean: function (value) {
+        return (
+            value === true ||
+            value === "true" ||
+            value === 1 ||
+            value === "1" ||
+            value === "True"
+        );
+    },
 
+    isNumber: function (value) {
+        return (
+            typeof value === "number" &&
+            !isNaN(value)
+        );
+    },
 
+    toNumber: function (value) {
+        function handleMathExpression(str) {
+            const mathMatch =
+                str.match(
+                    /^(\d*\.?\d+)\s*([+-*/])\s*(\d*\.?\d+)$/
+                );
+
+            if (!mathMatch) {
+                return null;
+            }
+
+            const a = parseFloat(mathMatch[1]);
+            const operator = mathMatch[2];
+            const b = parseFloat(mathMatch[3]);
+
+            const operators = {
+                "+": (a, b) => a + b,
+                "-": (a, b) => a - b,
+                "*": (a, b) => a * b,
+                "/": (a, b) =>
+                    b !== 0 ? a / b : NaN
+            };
+
+            return operators[operator](a, b);
+        }
+
+        function convertToNumber(str) {
+            const num = parseFloat(str);
+
+            return isNaN(num) ? 0 : num;
+        }
+
+        // Handle basic types.
+        if (this.isNumber(value)) {
+            return value;
+        }
+
+        if (this.isEmpty(value)) {
+            return 0;
+        }
+
+        const str = String(value).trim();
+
+        if (str === "") {
+            return 0;
+        }
+
+        // Handle math expressions or simple numbers.
+        return (
+            handleMathExpression(str) ||
+            convertToNumber(str)
+        );
+    }
+};
 
 // Apply common fixes.
 unityApp.applyCommonFixes();
