@@ -262,14 +262,120 @@ loadSplitWasm: async function (buildUrl, wasmFile, partCount) {
     return wasm;
 },
 
-    startLoading: function () {
-        const canvas = document.querySelector("#unity-canvas");
-        const loadingBar = document.querySelector("#unity-loading-bar");
-        const progressBarFull = document.querySelector("#unity-progress-bar-full");
+startLoading: async function () {
+    const canvas = document.querySelector("#unity-canvas");
+    const loadingBar = document.querySelector("#unity-loading-bar");
+    const progressBarFull =
+        document.querySelector("#unity-progress-bar-full");
 
-        const buildUrl = "Build";
-        var WASM_FILE = "knockout[8]-mirraSDK[5.1.2].wasm";
-        var WASM_PARTS = 4;
+    const buildUrl = "Build";
+
+    const WASM_FILE =
+        "knockout[8]-mirraSDK[5.1.2].wasm";
+
+    const WASM_PARTS = 4;
+
+    const loaderUrl =
+        buildUrl +
+        "/knockout[8]-mirraSDK[5.1.2].loader.js";
+
+    loadingBar.style.display = "block";
+
+    try {
+        // Load .part01 -> .part04
+        const wasmBuffer =
+            await this.loadSplitWasm(
+                buildUrl,
+                WASM_FILE,
+                WASM_PARTS
+            );
+
+        // Create a Blob containing the complete WASM
+        const wasmBlob = new Blob(
+            [wasmBuffer],
+            { type: "application/wasm" }
+        );
+
+        const wasmUrl =
+            URL.createObjectURL(wasmBlob);
+
+        console.log("WASM Blob URL:", wasmUrl);
+
+        const config = {
+            arguments: [],
+
+            dataUrl:
+                buildUrl +
+                "/knockout[8]-mirraSDK[5.1.2].data.br",
+
+            frameworkUrl:
+                buildUrl +
+                "/knockout[8]-mirraSDK[5.1.2].framework.js.br",
+
+            codeUrl: wasmUrl,
+
+            streamingAssetsUrl: "StreamingAssets",
+
+            companyName: "DefaultCompany",
+            productName: "knockout",
+            productVersion: "0.1.0",
+
+            showBanner: (msg, type) => {
+                if (type === "error") {
+                    console.error(msg);
+                } else {
+                    console.warn(msg);
+                }
+            }
+        };
+
+        const script =
+            document.createElement("script");
+
+        script.src = loaderUrl;
+
+        script.onload = () => {
+            createUnityInstance(
+                canvas,
+                config,
+                (progress) => {
+                    progressBarFull.style.width =
+                        100 * progress + "%";
+                }
+            )
+            .then((unityInstance) => {
+                loadingBar.style.display = "none";
+            })
+            .catch((message) => {
+                console.error(message);
+                alert(message);
+            });
+        };
+
+        script.onerror = () => {
+            throw new Error(
+                "Failed to load Unity loader: " +
+                loaderUrl
+            );
+        };
+
+        document.body.appendChild(script);
+
+    } catch (error) {
+        console.error(
+            "Failed to load split WASM:",
+            error
+        );
+
+        loadingBar.style.display = "none";
+
+        alert(
+            "Failed to load WASM:\n" +
+            error.message
+        );
+    }
+},
+
     startLoading: async function () {
     const canvas = document.querySelector("#unity-canvas");
     const loadingBar = document.querySelector("#unity-loading-bar");
