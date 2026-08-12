@@ -42,221 +42,120 @@ const unityApp = {
     },
 
     tryRotationLock: function () {
-        // No rotation lock configured.
     },
 
     tryLockAspectRatio: function () {
-        // No aspect ratio configured.
     },
 
-loadSplitWasm: async function (buildUrl, wasmFile, partCount) {
-    const parts = [];
+    loadSplitWasm: async function (buildUrl, wasmFile, partCount) {
 
-    for (let i = 1; i <= partCount; i++) {
-        const partName =
-            wasmFile + ".part" + String(i).padStart(2, "0");
+        const parts = [];
 
-        const url = buildUrl + "/" + partName;
+        for (let i = 1; i <= partCount; i++) {
 
-        console.log("Loading:", url);
+            const partName =
+                wasmFile + ".part" + String(i).padStart(2, "0");
 
-        const response = await fetch(url);
+            const url =
+                buildUrl + "/" + partName;
 
-        if (!response.ok) {
-            throw new Error(
-                "Failed to load " +
-                partName +
-                " HTTP " +
-                response.status
+            console.log("Loading:", url);
+
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                throw new Error(
+                    "Failed to load " +
+                    partName +
+                    " HTTP " +
+                    response.status
+                );
+            }
+
+            const buffer =
+                await response.arrayBuffer();
+
+            const part =
+                new Uint8Array(buffer);
+
+            console.log(
+                partName + " size:",
+                part.length
             );
+
+            console.log(
+                partName + " first bytes:",
+                Array.from(part.slice(0, 8))
+                    .map(function (x) {
+                        return x.toString(16).padStart(2, "0");
+                    })
+                    .join(" ")
+            );
+
+            parts.push(part);
         }
 
-        const bytes = new Uint8Array(
-            await response.arrayBuffer()
-        );
-
-        console.log(
-            partName + " size: " + bytes.length
-        );
-
-        parts.push(bytes);
-    }
-
-    let totalSize = 0;
-
-    for (const part of parts) {
-        totalSize += part.length;
-    }
-
-    console.log(
-        "Total reconstructed WASM size:",
-        totalSize
-    );
-
-    const combined = new Uint8Array(totalSize);
-
-    let offset = 0;
-
-    for (const part of parts) {
-        combined.set(part, offset);
-        offset += part.length;
-    }
-
-    const header = [...combined.slice(0, 8)]
-        .map(function (x) {
-            return x.toString(16).padStart(2, "0");
-        })
-        .join(" ");
-
-    console.log(
-        "Combined WASM header:",
-        header
-    );
-
-    if (
-        combined[0] !== 0x00 ||
-        combined[1] !== 0x61 ||
-        combined[2] !== 0x73 ||
-        combined[3] !== 0x6d
-    ) {
-        throw new Error(
-            "Combined file is NOT WASM.\n\n" +
-            "Header: " + header
-        );
-    }
-
-    console.log("SUCCESS: Valid WASM!");
-
-    return combined;
-},
-    /*
-     * Check WASM header
-     */
-    const header =
-        [...combined.slice(0, 8)]
-            .map(function (x) {
-                return x
-                    .toString(16)
-                    .padStart(2, "0");
-            })
-            .join(" ");
-
-    console.log(
-        "Combined header:",
-        header
-    );
-
-    if (
-        combined[0] !== 0x00 ||
-        combined[1] !== 0x61 ||
-        combined[2] !== 0x73 ||
-        combined[3] !== 0x6d
-    ) {
-        throw new Error(
-            "The reconstructed file is not a WASM file.\n\n" +
-            "Header: " + header
-        );
-    }
-
-    console.log("WASM reconstructed successfully!");
-
-    return combined;
-},
-
-        /*
-         * Calculate combined size.
-         */
         let totalSize = 0;
 
-        for (const part of parts) {
-            totalSize += part.byteLength;
+        for (let i = 0; i < parts.length; i++) {
+            totalSize += parts[i].length;
         }
 
         console.log(
-            "Total WASM size:",
+            "Total reconstructed size:",
             totalSize
         );
 
-        /*
-         * Combine all parts.
-         */
-        const wasm =
+        const combined =
             new Uint8Array(totalSize);
 
         let offset = 0;
 
-        for (const part of parts) {
-
-            wasm.set(
-                part,
-                offset
-            );
-
-            offset += part.byteLength;
+        for (let i = 0; i < parts.length; i++) {
+            combined.set(parts[i], offset);
+            offset += parts[i].length;
         }
 
-        /*
-         * Check WASM magic header.
-         *
-         * WASM must begin with:
-         *
-         * 00 61 73 6D
-         */
         const header =
-            [...wasm.slice(0, 8)]
+            Array.from(combined.slice(0, 8))
                 .map(function (x) {
-                    return x
-                        .toString(16)
-                        .padStart(2, "0");
+                    return x.toString(16).padStart(2, "0");
                 })
                 .join(" ");
 
         console.log(
-            "Combined WASM header:",
+            "Combined header:",
             header
         );
 
         if (
-            wasm[0] !== 0x00 ||
-            wasm[1] !== 0x61 ||
-            wasm[2] !== 0x73 ||
-            wasm[3] !== 0x6D
+            combined[0] !== 0x00 ||
+            combined[1] !== 0x61 ||
+            combined[2] !== 0x73 ||
+            combined[3] !== 0x6d
         ) {
-
             throw new Error(
                 "Combined file is NOT WASM.\n\n" +
-                "Header: " +
-                header +
-                "\n\n" +
-                "Expected: 00 61 73 6d\n\n" +
-                "If you see 52 61 72 21, " +
-                "your .part files are RAR files."
+                "Header: " + header + "\n\n" +
+                "Expected: 00 61 73 6d"
             );
         }
 
-        console.log(
-            "SUCCESS: Valid WASM!"
-        );
+        console.log("SUCCESS: Valid WASM!");
 
-        return wasm;
+        return combined;
     },
 
     startLoading: async function () {
 
         const canvas =
-            document.querySelector(
-                "#unity-canvas"
-            );
+            document.querySelector("#unity-canvas");
 
         const loadingBar =
-            document.querySelector(
-                "#unity-loading-bar"
-            );
+            document.querySelector("#unity-loading-bar");
 
         const progressBarFull =
-            document.querySelector(
-                "#unity-progress-bar-full"
-            );
+            document.querySelector("#unity-progress-bar-full");
 
         const buildUrl = "Build";
 
@@ -269,15 +168,10 @@ loadSplitWasm: async function (buildUrl, wasmFile, partCount) {
             buildUrl +
             "/knockout[8]-mirraSDK[5.1.2].loader.js";
 
-        loadingBar.style.display =
-            "block";
+        loadingBar.style.display = "block";
 
         try {
 
-            /*
-             * Download and combine
-             * part01 -> part04.
-             */
             const wasmBuffer =
                 await this.loadSplitWasm(
                     buildUrl,
@@ -285,10 +179,6 @@ loadSplitWasm: async function (buildUrl, wasmFile, partCount) {
                     wasmParts
                 );
 
-            /*
-             * Make a Blob containing
-             * the reconstructed WASM.
-             */
             const wasmBlob =
                 new Blob(
                     [wasmBuffer],
@@ -297,22 +187,14 @@ loadSplitWasm: async function (buildUrl, wasmFile, partCount) {
                     }
                 );
 
-            /*
-             * Create a temporary URL.
-             */
             const wasmUrl =
-                URL.createObjectURL(
-                    wasmBlob
-                );
+                URL.createObjectURL(wasmBlob);
 
             console.log(
                 "Created WASM Blob:",
                 wasmUrl
             );
 
-            /*
-             * Unity configuration.
-             */
             const config = {
 
                 arguments: [],
@@ -325,9 +207,6 @@ loadSplitWasm: async function (buildUrl, wasmFile, partCount) {
                     buildUrl +
                     "/knockout[8]-mirraSDK[5.1.2].framework.js.br",
 
-                /*
-                 * Use reconstructed WASM.
-                 */
                 codeUrl:
                     wasmUrl,
 
@@ -346,86 +225,72 @@ loadSplitWasm: async function (buildUrl, wasmFile, partCount) {
                 matchWebGLToCanvasSize:
                     true,
 
-                showBanner:
-                    function (msg, type) {
+                showBanner: function (msg, type) {
 
-                        if (type === "error") {
-                            console.error(msg);
-                        } else {
-                            console.warn(msg);
-                        }
-
+                    if (type === "error") {
+                        console.error(msg);
+                    } else {
+                        console.warn(msg);
                     }
+
+                }
             };
 
-            /*
-             * Load Unity loader.
-             */
             const script =
-                document.createElement(
-                    "script"
+                document.createElement("script");
+
+            script.src = loaderUrl;
+
+            script.onload = function () {
+
+                console.log(
+                    "Unity loader loaded."
                 );
 
-            script.src =
-                loaderUrl;
+                createUnityInstance(
+                    canvas,
+                    config,
+                    function (progress) {
 
-            script.onload =
-                function () {
+                        progressBarFull.style.width =
+                            (progress * 100) + "%";
+
+                    }
+                )
+                .then(function (unityInstance) {
 
                     console.log(
-                        "Unity loader loaded."
+                        "Unity loaded successfully!"
                     );
 
-                    createUnityInstance(
-                        canvas,
-                        config,
-                        function (progress) {
+                    loadingBar.style.display =
+                        "none";
 
-                            progressBarFull.style.width =
-                                (progress * 100) + "%";
+                })
+                .catch(function (error) {
 
-                        }
-                    )
-                    .then(
-                        function (unityInstance) {
-
-                            console.log(
-                                "Unity loaded successfully!"
-                            );
-
-                            loadingBar.style.display =
-                                "none";
-
-                        }
-                    )
-                    .catch(
-                        function (error) {
-
-                            console.error(
-                                "Unity failed:",
-                                error
-                            );
-
-                            loadingBar.style.display =
-                                "none";
-
-                        }
-                    );
-                };
-
-            script.onerror =
-                function () {
-
-                    throw new Error(
-                        "Failed to load Unity loader:\n" +
-                        loaderUrl
+                    console.error(
+                        "Unity failed:",
+                        error
                     );
 
-                };
+                    loadingBar.style.display =
+                        "none";
 
-            document.body.appendChild(
-                script
-            );
+                });
+
+            };
+
+            script.onerror = function () {
+
+                throw new Error(
+                    "Failed to load Unity loader:\n" +
+                    loaderUrl
+                );
+
+            };
+
+            document.body.appendChild(script);
 
         } catch (error) {
 
@@ -442,77 +307,13 @@ loadSplitWasm: async function (buildUrl, wasmFile, partCount) {
                 error.message
             );
         }
-    },
-
-    isMobile: function () {
-        return /iPhone|iPad|iPod|Android/i.test(
-            navigator.userAgent
-        );
-    },
-
-    isEmpty: function (value) {
-        return (
-            value === undefined ||
-            value === null ||
-            value === ""
-        );
-    },
-
-    toBoolean: function (value) {
-        return (
-            value === true ||
-            value === "true" ||
-            value === 1 ||
-            value === "1" ||
-            value === "True"
-        );
-    },
-
-    isNumber: function (value) {
-        return (
-            typeof value === "number" &&
-            !isNaN(value)
-        );
-    },
-
-    toNumber: function (value) {
-
-        if (this.isNumber(value)) {
-            return value;
-        }
-
-        if (this.isEmpty(value)) {
-            return 0;
-        }
-
-        const str =
-            String(value).trim();
-
-        if (str === "") {
-            return 0;
-        }
-
-        const num =
-            parseFloat(str);
-
-        return isNaN(num)
-            ? 0
-            : num;
     }
 };
 
-
-/*
- * Start Unity.
- */
 unityApp.applyCommonFixes();
-
 unityApp.tryRotationLock();
-
 unityApp.tryLockAspectRatio();
-
 unityApp.startLoading();
-
 </script>
   </body>
 </html>
