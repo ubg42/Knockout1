@@ -424,42 +424,6 @@ startLoading: async function () {
 
 
 
-    toNumber: function (value) {
-        function handleMathExpression(str) {
-            const mathMatch = str.match(/^(\d*\.?\d+)\s*([+\-*/])\s*(\d*\.?\d+)$/);
-            if (!mathMatch) return null;
-
-            const a = parseFloat(mathMatch[1]);
-            const operator = mathMatch[2];
-            const b = parseFloat(mathMatch[3]);
-
-            const operators = {
-                '+': function (a, b) { return a + b; },
-                '-': function (a, b) { return a - b; },
-                '*': function (a, b) { return a * b; },
-                '/': function (a, b) { return b !== 0 ? a / b : NaN; }
-            };
-            return operators[operator](a, b);
-        }
-
-        function convertToNumber(str) {
-            const num = parseFloat(str);
-            return isNaN(num) ? 0 : num;
-        }
-
-        // Handle basic type checks first.
-        if (this.isNumber(value)) return value;
-        if (this.isEmpty(value)) return 0;
-
-        // Convert to string and handle empty case.
-        var str = String(value).trim();
-        if (str === '') return 0;
-
-        // Try math expression or simple number conversion.
-        return handleMathExpression(str) || convertToNumber(str);
-    },
-
-};
 
 // Apply common fixes.
 unityApp.applyCommonFixes();
