@@ -214,37 +214,110 @@ const unityApp = {
         updateAspectRatio();
     },
 
-    startLoading: function () {
-        const canvas = document.querySelector("#unity-canvas");
-        const loadingBar = document.querySelector("#unity-loading-bar");
-        const progressBarFull = document.querySelector("#unity-progress-bar-full");
+async function loadSplitWasm(buildUrl, fileName, parts) {
+    const buffers = [];
 
-        const buildUrl = "Build";
-        var WASM_FILE = "knockout[8]-mirraSDK[5.1.2].wasm";
-        var WASM_PARTS = 4;
-        const loaderUrl = buildUrl + "/knockout[8]-mirraSDK[5.1.2].loader.js";
-        const config = {
-            arguments: [],
-            dataUrl: buildUrl + "/knockout[8]-mirraSDK[5.1.2].data.br",
-            frameworkUrl: buildUrl + "/knockout[8]-mirraSDK[5.1.2].framework.js.br",
-            codeUrl: buildUrl + "/knockout[8]-mirraSDK[5.1.2].wasm",
-            streamingAssetsUrl: "StreamingAssets",
-            companyName: "DefaultCompany",
-            productName: "knockout",
-            productVersion: "0.1.0",
-            showBanner: (msg, type) => {
-                switch (type) {
-                    case 'error': {
-                        console.error(msg);
-                        break;
-                    }
-                    default: {
-                        console.warn(msg);
-                        break;
-                    }
-                }
-            },
-        };
+    for (let i = 1; i <= parts; i++) {
+        const url =
+            buildUrl + "/" +
+            fileName + ".part" +
+            String(i).padStart(2, "0");
+
+        console.log("Loading WASM part:", url);
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error(
+                "Failed to load WASM part " +
+                i +
+                ": HTTP " +
+                response.status
+            );
+        }
+
+        buffers.push(await response.arrayBuffer());
+    }
+
+    const wasmBlob = new Blob(buffers, {
+        type: "application/wasm"
+    });
+
+    return URL.createObjectURL(wasmBlob);
+}
+    startLoading: async function () {
+    const canvas = document.querySelector("#unity-canvas");
+    const loadingBar = document.querySelector("#unity-loading-bar");
+    const progressBarFull = document.querySelector("#unity-progress-bar-full");
+
+    const buildUrl = "Build";
+
+    const wasmFile = "knockout[8]-mirraSDK[5.1.2].wasm";
+
+    const wasmUrl = await loadSplitWasm(
+        buildUrl,
+        wasmFile,
+        4
+    );
+
+    const loaderUrl =
+        buildUrl + "/knockout[8]-mirraSDK[5.1.2].loader.js";
+
+    const config = {
+        arguments: [],
+
+        dataUrl:
+            buildUrl + "/knockout[8]-mirraSDK[5.1.2].data.br",
+
+        frameworkUrl:
+            buildUrl + "/knockout[8]-mirraSDK[5.1.2].framework.js.br",
+
+        codeUrl: wasmUrl,
+
+        streamingAssetsUrl: "StreamingAssets",
+
+        companyName: "DefaultCompany",
+        productName: "knockout",
+        productVersion: "0.1.0",
+
+        showBanner: (msg, type) => {
+            if (type === "error") {
+                console.error(msg);
+            } else {
+                console.warn(msg);
+            }
+        }
+    };
+
+    loadingBar.style.display = "block";
+
+    const script = document.createElement("script");
+    script.src = loaderUrl;
+
+    script.onload = () => {
+        createUnityInstance(
+            canvas,
+            config,
+            (progress) => {
+                progressBarFull.style.width =
+                    100 * progress + "%";
+            }
+        )
+        .then((unityInstance) => {
+            loadingBar.style.display = "none";
+        })
+        .catch((message) => {
+            console.error(message);
+            alert(message);
+        });
+    };
+
+    script.onerror = () => {
+        console.error("Failed to load Unity loader:", loaderUrl);
+    };
+
+    document.body.appendChild(script);
+}
 
         // By default Unity keeps WebGL canvas render target size matched with
         // the DOM size of the canvas element (scaled by window.devicePixelRatio)
