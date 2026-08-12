@@ -213,17 +213,6 @@
         // Update aspect ratio on start.
         updateAspectRatio();
     },
-        const wasmBuffer = await loadSplitWasm(
-    "Build/game.wasm",
-    4
-);
-
-    async function loadSplitWasm(baseUrl, parts) {
-    const responses = await Promise.all(
-        Array.from({ length: parts }, (_, i) =>
-            fetch(`${baseUrl}.part${String(i + 1).padStart(2, "0")}`)
-        )
-    );
 
     for (const response of responses) {
         if (!response.ok) {
@@ -256,6 +245,8 @@ const wasmModule = await WebAssembly.compile(wasmBuffer);
         const progressBarFull = document.querySelector("#unity-progress-bar-full");
 
         const buildUrl = "Build";
+var WASM_FILE = "knockout[8]-mirraSDK[5.1.2].wasm";
+var WASM_PARTS = 4;
         const loaderUrl = buildUrl + "/knockout[8]-mirraSDK[5.1.2].loader.js";
         const config = {
             arguments: [],
