@@ -1,815 +1,364 @@
 <!DOCTYPE html>
+
 <html lang="en-us">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width,
-                 initial-scale=1.0,
-                 maximum-scale=1.0,
-                 user-scalable=no,
-                 shrink-to-fit=yes"
-    >
-
-    <title>knockout</title>
-
-    <link
-        rel="shortcut icon"
-        href="TemplateData/favicon.ico"
-    >
-
-    <link
-        rel="stylesheet"
-        href="TemplateData/style.css"
-    >
-
-    <link
-        rel="manifest"
-        href="manifest.webmanifest"
-    >
+<head><meta http-equiv="Content-Security-Policy" content="child-src 'self' *.allwebgames.com *.games.yango.com *.gametok.com *.gametok.tech *.igrotok.com *.juegocasa.com *.playhop.com *.playhop.tech *.wowspiele.de *.yandex.az *.yandex.by *.yandex.co.il *.yandex.com *.yandex.com.am *.yandex.com.ge *.yandex.com.tr *.yandex.ee *.yandex.fr *.yandex.kg *.yandex.kz *.yandex.lt *.yandex.lv *.yandex.md *.yandex.ru *.yandex.tj *.yandex.tm *.yandex.ua *.yandex.uz *.yango.games-store.net allwebgames.com blob: games.yango.com gametok.com igrotok.com juegocasa.com playhop.com wowspiele.de yandex.az yandex.by yandex.co.il yandex.com yandex.com.am yandex.com.ge yandex.com.tr yandex.ee yandex.fr yandex.kg yandex.kz yandex.lt yandex.lv yandex.md yandex.ru yandex.tj yandex.tm yandex.ua yandex.uz; connect-src 'self' *.allwebgames.com *.eponesh.com *.gameanalytics.com *.games.yango.com *.gametok.com *.gametok.tech *.igrotok.com *.juegocasa.com *.playhop.com *.playhop.tech *.unity3d.com *.website.yandexcloud.net *.wowspiele.de *.yandex.az *.yandex.by *.yandex.co.il *.yandex.com *.yandex.com.am *.yandex.com.ge *.yandex.com.tr *.yandex.ee *.yandex.fr *.yandex.kg *.yandex.kz *.yandex.lt *.yandex.lv *.yandex.md *.yandex.net *.yandex.ru *.yandex.tj *.yandex.tm *.yandex.ua *.yandex.uz *.yango.games-store.net allwebgames.com blob: data: games.yango.com gametok.com igrotok.com juegocasa.com playhop.com storage.yandexcloud.net wowspiele.de wss://*.eponesh.com:* wss://qr-games.ru:* www.google-analytics.com www.googletagmanager.com yandex.az yandex.by yandex.co.il yandex.com yandex.com.am yandex.com.ge yandex.com.tr yandex.ee yandex.fr yandex.kg yandex.kz yandex.lt yandex.lv yandex.md yandex.ru yandex.tj yandex.tm yandex.ua yandex.uz yandexmetrica.com yastatic.net; default-src 'self'; font-src 'self' *.allwebgames.com *.games.yango.com *.gametok.com *.gametok.tech *.igrotok.com *.juegocasa.com *.playhop.com *.playhop.tech *.website.yandexcloud.net *.wowspiele.de *.yandex.az *.yandex.by *.yandex.co.il *.yandex.com *.yandex.com.am *.yandex.com.ge *.yandex.com.tr *.yandex.ee *.yandex.fr *.yandex.kg *.yandex.kz *.yandex.lt *.yandex.lv *.yandex.md *.yandex.ru *.yandex.tj *.yandex.tm *.yandex.ua *.yandex.uz *.yango.games-store.net allwebgames.com data: fonts.gstatic.com games.yango.com gametok.com igrotok.com juegocasa.com playhop.com storage.yandexcloud.net wowspiele.de yandex.az yandex.by yandex.co.il yandex.com yandex.com.am yandex.com.ge yandex.com.tr yandex.ee yandex.fr yandex.kg yandex.kz yandex.lt yandex.lv yandex.md yandex.ru yandex.tj yandex.tm yandex.ua yandex.uz yastat.net yastatic.net; frame-src 'self' *.allwebgames.com *.games.yango.com *.gametok.com *.gametok.tech *.igrotok.com *.juegocasa.com *.playhop.com *.playhop.tech *.website.yandexcloud.net *.wowspiele.de *.yandex.az *.yandex.by *.yandex.co.il *.yandex.com *.yandex.com.am *.yandex.com.ge *.yandex.com.tr *.yandex.ee *.yandex.fr *.yandex.kg *.yandex.kz *.yandex.lt *.yandex.lv *.yandex.md *.yandex.ru *.yandex.tj *.yandex.tm *.yandex.ua *.yandex.uz *.yango.games-store.net allwebgames.com games.yango.com gametok.com igrotok.com juegocasa.com localhost playhop.com wowspiele.de yandex.az yandex.by yandex.co.il yandex.com yandex.com.am yandex.com.ge yandex.com.tr yandex.ee yandex.fr yandex.kg yandex.kz yandex.lt yandex.lv yandex.md yandex.ru yandex.tj yandex.tm yandex.ua yandex.uz yastatic.net; img-src 'self' *.allwebgames.com *.eponesh.com *.games.yango.com *.gametok.com *.gametok.tech *.igrotok.com *.juegocasa.com *.playhop.com *.playhop.tech *.website.yandexcloud.net *.wowspiele.de *.yandex.az *.yandex.by *.yandex.co.il *.yandex.com *.yandex.com.am *.yandex.com.ge *.yandex.com.tr *.yandex.ee *.yandex.fr *.yandex.kg *.yandex.kz *.yandex.lt *.yandex.lv *.yandex.md *.yandex.net *.yandex.ru *.yandex.tj *.yandex.tm *.yandex.ua *.yandex.uz *.yango.games-store.net allwebgames.com blob: data: games.yango.com gametok.com igrotok.com juegocasa.com playhop.com storage.yandexcloud.net wowspiele.de yandex.az yandex.by yandex.co.il yandex.com yandex.com.am yandex.com.ge yandex.com.tr yandex.ee yandex.fr yandex.kg yandex.kz yandex.lt yandex.lv yandex.md yandex.ru yandex.tj yandex.tm yandex.ua yandex.uz yastatic.net; media-src 'self' *.allwebgames.com *.games.yango.com *.gametok.com *.gametok.tech *.igrotok.com *.juegocasa.com *.playhop.com *.playhop.tech *.website.yandexcloud.net *.wowspiele.de *.yandex.az *.yandex.by *.yandex.co.il *.yandex.com *.yandex.com.am *.yandex.com.ge *.yandex.com.tr *.yandex.ee *.yandex.fr *.yandex.kg *.yandex.kz *.yandex.lt *.yandex.lv *.yandex.md *.yandex.net *.yandex.ru *.yandex.tj *.yandex.tm *.yandex.ua *.yandex.uz *.yango.games-store.net allwebgames.com blob: data: games.yango.com gametok.com igrotok.com juegocasa.com playhop.com storage.yandexcloud.net wowspiele.de yandex.az yandex.by yandex.co.il yandex.com yandex.com.am yandex.com.ge yandex.com.tr yandex.ee yandex.fr yandex.kg yandex.kz yandex.lt yandex.lv yandex.md yandex.ru yandex.tj yandex.tm yandex.ua yandex.uz; object-src 'self' *.allwebgames.com *.games.yango.com *.gametok.com *.gametok.tech *.igrotok.com *.juegocasa.com *.playhop.com *.playhop.tech *.wowspiele.de *.yandex.az *.yandex.by *.yandex.co.il *.yandex.com *.yandex.com.am *.yandex.com.ge *.yandex.com.tr *.yandex.ee *.yandex.fr *.yandex.kg *.yandex.kz *.yandex.lt *.yandex.lv *.yandex.md *.yandex.ru *.yandex.tj *.yandex.tm *.yandex.ua *.yandex.uz *.yango.games-store.net allwebgames.com blob: games.yango.com gametok.com igrotok.com juegocasa.com playhop.com wowspiele.de yandex.az yandex.by yandex.co.il yandex.com yandex.com.am yandex.com.ge yandex.com.tr yandex.ee yandex.fr yandex.kg yandex.kz yandex.lt yandex.lv yandex.md yandex.ru yandex.tj yandex.tm yandex.ua yandex.uz; script-src 'self' 'unsafe-eval' 'unsafe-inline' *.allwebgames.com *.eponesh.com *.gameanalytics.com *.games.yango.com *.gametok.com *.gametok.tech *.igrotok.com *.juegocasa.com *.playhop.com *.playhop.tech *.website.yandexcloud.net *.wowspiele.de *.ya.ru *.yandex.az *.yandex.by *.yandex.co.il *.yandex.com *.yandex.com.am *.yandex.com.ge *.yandex.com.tr *.yandex.ee *.yandex.fr *.yandex.kg *.yandex.kz *.yandex.lt *.yandex.lv *.yandex.md *.yandex.ru *.yandex.tj *.yandex.tm *.yandex.ua *.yandex.uz *.yango.games-store.net abt.s3.yandex.net allwebgames.com blob: data: games.yango.com gametok.com igrotok.com juegocasa.com playhop.com storage.yandexcloud.net wowspiele.de www.google-analytics.com www.googletagmanager.com ya.ru yandex.az yandex.by yandex.co.il yandex.com yandex.com.am yandex.com.ge yandex.com.tr yandex.ee yandex.fr yandex.kg yandex.kz yandex.lt yandex.lv yandex.md yandex.ru yandex.tj yandex.tm yandex.ua yandex.uz yastatic.net; style-src 'self' 'unsafe-eval' 'unsafe-inline' *.allwebgames.com *.games.yango.com *.gametok.com *.gametok.tech *.igrotok.com *.juegocasa.com *.playhop.com *.playhop.tech *.website.yandexcloud.net *.wowspiele.de *.yandex.az *.yandex.by *.yandex.co.il *.yandex.com *.yandex.com.am *.yandex.com.ge *.yandex.com.tr *.yandex.ee *.yandex.fr *.yandex.kg *.yandex.kz *.yandex.lt *.yandex.lv *.yandex.md *.yandex.ru *.yandex.tj *.yandex.tm *.yandex.ua *.yandex.uz *.yango.games-store.net allwebgames.com blob: data: fonts.googleapis.com games.yango.com gametok.com igrotok.com juegocasa.com playhop.com storage.yandexcloud.net wowspiele.de yandex.az yandex.by yandex.co.il yandex.com yandex.com.am yandex.com.ge yandex.com.tr yandex.ee yandex.fr yandex.kg yandex.kz yandex.lt yandex.lv yandex.md yandex.ru yandex.tj yandex.tm yandex.ua yandex.uz; worker-src 'self' *.allwebgames.com *.games.yango.com *.gametok.com *.gametok.tech *.igrotok.com *.juegocasa.com *.playhop.com *.playhop.tech *.website.yandexcloud.net *.wowspiele.de *.yandex.az *.yandex.by *.yandex.co.il *.yandex.com *.yandex.com.am *.yandex.com.ge *.yandex.com.tr *.yandex.ee *.yandex.fr *.yandex.kg *.yandex.kz *.yandex.lt *.yandex.lv *.yandex.md *.yandex.ru *.yandex.tj *.yandex.tm *.yandex.ua *.yandex.uz *.yango.games-store.net allwebgames.com blob: games.yango.com gametok.com igrotok.com juegocasa.com playhop.com storage.yandexcloud.net wowspiele.de yandex.az yandex.by yandex.co.il yandex.com yandex.com.am yandex.com.ge yandex.com.tr yandex.ee yandex.fr yandex.kg yandex.kz yandex.lt yandex.lv yandex.md yandex.ru yandex.tj yandex.tm yandex.ua yandex.uz"/>
+<!-- Content encoding -->
+<meta charset="utf-8"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=yes"/>
+<!-- Page info and stylesheets -->
+<title>knockout</title>
+<link rel="shortcut icon" href="TemplateData/favicon.ico"/>
+<link rel="stylesheet" href="TemplateData/style.css"/>
+<link rel="manifest" href="manifest.webmanifest"/>
 </head>
-
 <body>
-
+<!-- Unity canvas -->
 <div id="unity-container">
-
-    <canvas
-        id="unity-canvas"
-        tabindex="-1">
-    </canvas>
-
-    <div id="unity-loading-bar">
-
-        <div id="unity-logo"></div>
-
-        <div id="unity-progress-bar-empty">
-
-            <div id="unity-progress-bar-full"></div>
-
-        </div>
-
-    </div>
-
+<canvas id="unity-canvas" tabindex="-1"></canvas>
+<div id="unity-loading-bar">
+<div id="unity-logo"></div>
+<div id="unity-progress-bar-empty">
+<div id="unity-progress-bar-full"></div>
 </div>
-
-
-<!--
-    Browser RAR extractor.
-
-    This library is used to read the reconstructed RAR archive.
--->
-<script src="https://unpkg.com/unrarit@0.0.5/dist/unrarit.umd.js"></script>
-
-
+</div>
+</div>
+<!-- Unity loader script -->
 <script>
-
-const unityApp = {
+    const unityApp = {
 
     applyCommonFixes: function () {
+        // Disable unwanted page scroll.
+        window.addEventListener("wheel", (event) => event.preventDefault(), {
+            passive: false,
+        });
 
-        window.addEventListener(
-            "wheel",
-            function (event) {
+        // Disable unwanted key events.
+        window.addEventListener("keydown", (event) => {
+            if (["ArrowUp", "ArrowDown"].includes(event.key)) {
                 event.preventDefault();
-            },
-            { passive: false }
-        );
+            }
+        });
 
-        window.addEventListener(
-            "keydown",
-            function (event) {
+        // Disable context menu appearing after right click outside of the unity canvas.
+        window.addEventListener('contextmenu', (event) => event.preventDefault());
+        document.addEventListener('contextmenu', (event) => event.preventDefault());
+    },
 
-                if (
-                    ["ArrowUp", "ArrowDown"]
-                    .includes(event.key)
-                ) {
-                    event.preventDefault();
+    tryRotationLock() {
+        const PORTRAIT_ONLY = "";
+        let isPortraitLocked = false;
+        if (!unityApp.isEmpty(PORTRAIT_ONLY)) {
+            isPortraitLocked = unityApp.toBoolean(PORTRAIT_ONLY);
+        }
+        console.log("isPortraitLocked", PORTRAIT_ONLY, isPortraitLocked);
+
+        const LANDSCAPE_ONLY = "";
+        let isLandscapeLocked = false;
+        if (!unityApp.isEmpty(LANDSCAPE_ONLY)) {
+            isLandscapeLocked = unityApp.toBoolean(LANDSCAPE_ONLY);
+        }
+        console.log("isLandscapeLocked", LANDSCAPE_ONLY, isLandscapeLocked);
+
+        if (isPortraitLocked && isLandscapeLocked) {
+            throw new Error("Both portrait and landscape lock cannot be enabled at the same time.");
+        }
+
+        const root = document.createElement("div");
+
+        // Stretch to full screen.
+        root.style.background = 'rgb(10, 10, 10, 0.7)';
+        root.style.display = 'flex';
+        root.style.position = 'fixed';
+        root.style.top = '0';
+        root.style.left = '0';
+        root.style.width = '100%';
+        root.style.height = '100%';
+
+        // Create blur background effect.
+        root.style.webkitBackfaceVisibility = 'hidden';
+        root.style.webkitPerspective = '1000';
+        root.style.webkitTransform = 'translate3d(0,0,0)';
+        root.style.webkitTransform = 'translateZ(0)';
+        root.style.backfaceVisibility = 'hidden';
+        root.style.perspective = '1000';
+        root.style.transform = 'translate3d(0,0,0)';
+        root.style.transform = 'translateZ(0)';
+        root.style.backdropFilter = 'blur(10px)';
+
+        // Create intuitive image instruction for the user.
+        const image = document.createElement('img');
+        if (isPortraitLocked) {
+            image.src = 'TemplateData/portrait-only.png';
+        }
+        else if (isLandscapeLocked) {
+            image.src = 'TemplateData/landscape-only.png';
+        }
+        image.style.display = 'flex';
+        image.style.width = '100px';
+        image.style.height = '100px';
+        image.style.margin = 'auto';
+        root.appendChild(image);
+
+        document.body.appendChild(root);
+
+        function updateRotationLock() {
+            let display = 'none';
+            if (unityApp.isMobile()) {
+                if (isPortraitLocked && isLandscapeLocked) {
+                    root.style.display = display;
+                    return;
                 }
-
+                if (isPortraitLocked) {
+                    display = window.innerHeight < window.innerWidth ? 'flex' : 'none';
+                }
+                else if (isLandscapeLocked) {
+                    display = window.innerHeight > window.innerWidth ? 'flex' : 'none';
+                }
             }
-        );
+            root.style.display = display;
+        }
 
-        window.addEventListener(
-            "contextmenu",
-            function (event) {
-                event.preventDefault();
+        // Subscribe to window and document events.
+        window.addEventListener("load", updateRotationLock);
+        window.addEventListener("resize", updateRotationLock);
+        document.addEventListener("readystatechange", updateRotationLock);
+        document.addEventListener("DOMContentLoaded", updateRotationLock);
+
+        // Update rotation lock on start.
+        updateRotationLock();
+    },
+
+    tryLockAspectRatio() {
+        const mobilePortraitAspectRatio = "";
+        const mobileLandscapeAspectRatio = "";
+        const desktopAspectRatio = "";
+
+        const isMobilePortraitLocked = !this.isEmpty(mobilePortraitAspectRatio);
+        const isMobileLandscapeLocked = !this.isEmpty(mobileLandscapeAspectRatio);
+        const isDesktopLocked = !this.isEmpty(desktopAspectRatio);
+
+        console.log('tryLockAspectRatio', {
+            mobilePortraitAspectRatio: mobilePortraitAspectRatio,
+            mobileLandscapeAspectRatio: mobileLandscapeAspectRatio,
+            desktopAspectRatio: desktopAspectRatio,
+            isMobilePortraitLocked: isMobilePortraitLocked,
+            isMobileLandscapeLocked: isMobileLandscapeLocked,
+            isDesktopLocked: isDesktopLocked
+        });
+
+        const container = document.querySelector("#unity-container");
+        const canvas = document.querySelector("#unity-canvas");
+
+        function centerCanvas() {
+            canvas.style.margin = "auto";
+            canvas.style.top = "0";
+            canvas.style.left = "0";
+            canvas.style.bottom = "0";
+            canvas.style.right = "0";
+        }
+
+        function resetAspectRatio() {
+            canvas.style.width = "100%";
+            canvas.style.height = "100%";
+            centerCanvas();
+        }
+
+        function isPortraitMode() {
+            const containerWidth = container.clientWidth;
+            const containerHeight = container.clientHeight;
+            return containerHeight > containerWidth;
+        }
+
+        function recalculateAspectRatio(aspectRatio) {
+            const containerWidth = container.clientWidth;
+            const containerHeight = container.clientHeight;
+            if (containerWidth / containerHeight > aspectRatio) {
+                canvas.style.width = Math.floor(containerHeight * aspectRatio) + "px";
+                canvas.style.height = "100%";
             }
-        );
-
-    },
-
-
-    tryRotationLock: function () {
-    },
-
-
-    tryLockAspectRatio: function () {
-    },
-
-
-    /*
-     * ---------------------------------------------------------
-     * DOWNLOAD RAR PARTS
-     * ---------------------------------------------------------
-     */
-
-    loadRarParts: async function (
-        buildUrl,
-        archiveName,
-        partCount
-    ) {
-
-        const parts = [];
-
-        for (
-            let i = 1;
-            i <= partCount;
-            i++
-        ) {
-
-            const partName =
-                archiveName +
-                ".part" +
-                String(i).padStart(2, "0");
-
-            const url =
-                buildUrl +
-                "/" +
-                partName;
-
-            console.log(
-                "[RAR] Loading:",
-                url
-            );
-
-            const response =
-                await fetch(url);
-
-            if (!response.ok) {
-
-                throw new Error(
-                    "Failed to load " +
-                    partName +
-                    " HTTP " +
-                    response.status
-                );
-
+            else {
+                canvas.style.width = "100%";
+                canvas.style.height = Math.floor(containerWidth / aspectRatio) + "px";
             }
-
-            const bytes =
-                new Uint8Array(
-                    await response.arrayBuffer()
-                );
-
-            console.log(
-                "[RAR]",
-                partName,
-                "size:",
-                bytes.length
-            );
-
-            /*
-             * Print first bytes for debugging.
-             */
-
-            console.log(
-                "[RAR]",
-                partName,
-                "header:",
-                Array.from(
-                    bytes.slice(0, 8)
-                )
-                .map(function (x) {
-                    return x
-                        .toString(16)
-                        .padStart(2, "0");
-                })
-                .join(" ")
-            );
-
-            parts.push(bytes);
-
         }
 
-
-        /*
-         * Calculate combined archive size.
-         */
-
-        let totalSize = 0;
-
-        for (
-            let i = 0;
-            i < parts.length;
-            i++
-        ) {
-
-            totalSize +=
-                parts[i].length;
-
-        }
-
-
-        console.log(
-            "[RAR] Combined size:",
-            totalSize
-        );
-
-
-        /*
-         * Combine all RAR volumes.
-         */
-
-        const combined =
-            new Uint8Array(
-                totalSize
-            );
-
-        let offset = 0;
-
-        for (
-            let i = 0;
-            i < parts.length;
-            i++
-        ) {
-
-            combined.set(
-                parts[i],
-                offset
-            );
-
-            offset +=
-                parts[i].length;
-
-        }
-
-
-        /*
-         * Verify RAR5 signature.
-         *
-         * RAR5:
-         *
-         * 52 61 72 21
-         * 1A 07 01 00
-         */
-
-        const header =
-            Array.from(
-                combined.slice(0, 8)
-            )
-            .map(function (x) {
-
-                return x
-                    .toString(16)
-                    .padStart(2, "0");
-
-            })
-            .join(" ");
-
-
-        console.log(
-            "[RAR] Combined header:",
-            header
-        );
-
-
-        if (
-            combined[0] !== 0x52 ||
-            combined[1] !== 0x61 ||
-            combined[2] !== 0x72 ||
-            combined[3] !== 0x21
-        ) {
-
-            throw new Error(
-                "The combined file is not RAR.\n\n" +
-                "Header: " +
-                header
-            );
-
-        }
-
-
-        console.log(
-            "[RAR] RAR archive reconstructed successfully."
-        );
-
-
-        return combined;
-
-    },
-
-
-    /*
-     * ---------------------------------------------------------
-     * EXTRACT WASM FROM RAR
-     * ---------------------------------------------------------
-     */
-
-    extractWasm: async function (
-        rarBytes
-    ) {
-
-        console.log(
-            "[RAR] Starting RAR extraction..."
-        );
-
-
-        /*
-         * unrarit accepts a TypedArray.
-         */
-
-const result = await unrarit.unrar(rarBytes);
-
-
-        console.log(
-            "[RAR] Archive opened."
-        );
-
-
-        const entries =
-            result.entries;
-
-
-        const names =
-            Object.keys(entries);
-
-
-        console.log(
-            "[RAR] Files inside archive:"
-        );
-
-
-        for (
-            const name of names
-        ) {
-
-            console.log(
-                "  ",
-                name,
-                entries[name].size,
-                "bytes"
-            );
-
-        }
-
-
-        /*
-         * Find a WASM file.
-         */
-
-        let wasmEntry = null;
-        let wasmName = null;
-
-
-        for (
-            const name of names
-        ) {
-
-            if (
-                name
-                    .toLowerCase()
-                    .endsWith(".wasm")
-            ) {
-
-                wasmEntry =
-                    entries[name];
-
-                wasmName =
-                    name;
-
-                break;
-
-            }
-
-        }
-
-
-        if (!wasmEntry) {
-
-            throw new Error(
-                "No .wasm file was found inside the RAR archive."
-            );
-
-        }
-
-
-        console.log(
-            "[RAR] Found WASM:",
-            wasmName
-        );
-
-
-        console.log(
-            "[RAR] Extracting WASM..."
-        );
-
-
-        const wasmBuffer =
-            await wasmEntry.arrayBuffer();
-
-
-        const wasmBytes =
-            new Uint8Array(
-                wasmBuffer
-            );
-
-
-        console.log(
-            "[RAR] Extracted WASM size:",
-            wasmBytes.length
-        );
-
-
-        /*
-         * Verify actual WASM header.
-         *
-         * WASM:
-         *
-         * 00 61 73 6D
-         */
-
-        const wasmHeader =
-            Array.from(
-                wasmBytes.slice(0, 8)
-            )
-            .map(function (x) {
-
-                return x
-                    .toString(16)
-                    .padStart(2, "0");
-
-            })
-            .join(" ");
-
-
-        console.log(
-            "[WASM] Header:",
-            wasmHeader
-        );
-
-
-        if (
-            wasmBytes[0] !== 0x00 ||
-            wasmBytes[1] !== 0x61 ||
-            wasmBytes[2] !== 0x73 ||
-            wasmBytes[3] !== 0x6d
-        ) {
-
-            throw new Error(
-                "Extracted file is not valid WASM.\n\n" +
-                "Header: " +
-                wasmHeader
-            );
-
-        }
-
-
-        console.log(
-            "[WASM] Valid WASM found!"
-        );
-
-
-        return wasmBytes;
-
-    },
-
-
-    /*
-     * ---------------------------------------------------------
-     * START UNITY
-     * ---------------------------------------------------------
-     */
-
-    startLoading: async function () {
-
-        const canvas =
-            document.querySelector(
-                "#unity-canvas"
-            );
-
-
-        const loadingBar =
-            document.querySelector(
-                "#unity-loading-bar"
-            );
-
-
-        const progressBarFull =
-            document.querySelector(
-                "#unity-progress-bar-full"
-            );
-
-
-        const buildUrl =
-            "Build";
-
-
-        /*
-         * IMPORTANT:
-         *
-         * This is the base name of your RAR parts.
-         *
-         * If your actual files are:
-         *
-         * knockout[8]-mirraSDK[5.1.2].wasm.part01
-         *
-         * then leave this exactly as shown.
-         */
-
-        const archiveName =
-            "knockout[8]-mirraSDK[5.1.2].wasm";
-
-
-        const archiveParts =
-            4;
-
-
-        const loaderUrl =
-            buildUrl +
-            "/knockout[8]-mirraSDK[5.1.2].loader.js";
-
-
-        loadingBar.style.display =
-            "block";
-
-
-        try {
-
-            /*
-             * -------------------------------------------------
-             * STEP 1
-             *
-             * Download .part01 -> .part04
-             * -------------------------------------------------
-             */
-
-            const rarBytes =
-                await this.loadRarParts(
-                    buildUrl,
-                    archiveName,
-                    archiveParts
-                );
-
-
-            /*
-             * -------------------------------------------------
-             * STEP 2
-             *
-             * Extract WASM from RAR5
-             * -------------------------------------------------
-             */
-
-            const wasmBytes =
-                await this.extractWasm(
-                    rarBytes
-                );
-
-
-            /*
-             * -------------------------------------------------
-             * STEP 3
-             *
-             * Create WASM Blob
-             * -------------------------------------------------
-             */
-
-            const wasmBlob =
-                new Blob(
-                    [wasmBytes],
-                    {
-                        type: "application/wasm"
+        function updateAspectRatio() {
+            resetAspectRatio();
+            if (unityApp.isMobile()) {
+                if (isPortraitMode()) {
+                    if (isMobilePortraitLocked) {
+                        recalculateAspectRatio(unityApp.toNumber(mobilePortraitAspectRatio));
                     }
-                );
-
-
-            /*
-             * Create temporary URL.
-             */
-
-            const wasmUrl =
-                URL.createObjectURL(
-                    wasmBlob
-                );
-
-
-            console.log(
-                "[WASM] Blob URL:",
-                wasmUrl
-            );
-
-
-            /*
-             * -------------------------------------------------
-             * STEP 4
-             *
-             * Unity configuration
-             * -------------------------------------------------
-             */
-
-            const config = {
-
-                arguments: [],
-
-
-                dataUrl:
-                    buildUrl +
-                    "/knockout[8]-mirraSDK[5.1.2].data.br",
-
-
-                frameworkUrl:
-                    buildUrl +
-                    "/knockout[8]-mirraSDK[5.1.2].framework.js.br",
-
-
-                /*
-                 * This is now the extracted WASM.
-                 */
-
-                codeUrl:
-                    wasmUrl,
-
-
-                streamingAssetsUrl:
-                    "StreamingAssets",
-
-
-                companyName:
-                    "DefaultCompany",
-
-
-                productName:
-                    "knockout",
-
-
-                productVersion:
-                    "0.1.0",
-
-
-                matchWebGLToCanvasSize:
-                    true,
-
-
-                showBanner:
-                    function (
-                        msg,
-                        type
-                    ) {
-
-                        if (
-                            type === "error"
-                        ) {
-
-                            console.error(
-                                "[Unity]",
-                                msg
-                            );
-
-                        } else {
-
-                            console.warn(
-                                "[Unity]",
-                                msg
-                            );
-
-                        }
-
+                }
+                else {
+                    if (isMobileLandscapeLocked) {
+                        recalculateAspectRatio(unityApp.toNumber(mobileLandscapeAspectRatio));
                     }
+                }
+            }
+            else {
+                if (isDesktopLocked) {
+                    recalculateAspectRatio(unityApp.toNumber(desktopAspectRatio));
+                }
+            }
+            centerCanvas();
+        }
 
+        // Subscribe to window and document events.
+        window.addEventListener("load", updateAspectRatio);
+        window.addEventListener("resize", updateAspectRatio);
+        document.addEventListener("readystatechange", updateAspectRatio);
+        document.addEventListener("DOMContentLoaded", updateAspectRatio);
+
+        // Update aspect ratio on start.
+        updateAspectRatio();
+    },
+
+    startLoading: function () {
+        const canvas = document.querySelector("#unity-canvas");
+        const loadingBar = document.querySelector("#unity-loading-bar");
+        const progressBarFull = document.querySelector("#unity-progress-bar-full");
+
+        const buildUrl = "Build";
+        var WASM_FILE = "knockout[8]-mirraSDK[5.1.2].wasm";
+        var WASM_PARTS = 4;  
+        const loaderUrl = buildUrl + "/knockout[8]-mirraSDK[5.1.2].loader.js";
+        const config = {
+            arguments: [],
+            dataUrl: buildUrl + "/knockout[8]-mirraSDK[5.1.2].data.br",
+            frameworkUrl: buildUrl + "/knockout[8]-mirraSDK[5.1.2].framework.js.br",
+            codeUrl: buildUrl + "WASM_FILE";
+            streamingAssetsUrl: "StreamingAssets",
+            companyName: "DefaultCompany",
+            productName: "knockout",
+            productVersion: "0.1.0",
+            showBanner: (msg, type) => {
+                switch (type) {
+                    case 'error': {
+                        console.error(msg);
+                        break;
+                    }
+                    default: {
+                        console.warn(msg);
+                        break;
+                    }
+                }
+            },
+        };
+
+        // By default Unity keeps WebGL canvas render target size matched with
+        // the DOM size of the canvas element (scaled by window.devicePixelRatio)
+        // Set this to false if you want to decouple this synchronization from
+        // happening inside the engine, and you would instead like to size up
+        // the canvas DOM size and WebGL render target sizes yourself.
+        const matchWebGLToCanvasSize = "";
+        console.log("matchWebGLToCanvasSize", matchWebGLToCanvasSize);
+        if (!this.isEmpty(matchWebGLToCanvasSize)) {
+            config.matchWebGLToCanvasSize = this.toBoolean(matchWebGLToCanvasSize);
+        }
+
+        // If you would like all file writes inside Unity Application.persistentDataPath
+        // directory to automatically persist so that the contents are remembered when
+        // the user revisits the site the next time, uncomment the following line:
+        const autoSyncPersistentDataPath = "";
+        console.log("autoSyncPersistentDataPath", autoSyncPersistentDataPath);
+        if (!this.isEmpty(autoSyncPersistentDataPath)) {
+            config.autoSyncPersistentDataPath = this.toBoolean(autoSyncPersistentDataPath);
+        }
+        // This autosyncing is currently not the default behavior to avoid regressing
+        // existing user projects that might rely on the earlier manual
+        // JS_FileSystem_Sync() behavior, but in future Unity version, this will be
+        // expected to change.
+
+        // To lower canvas resolution on mobile devices to gain some
+        // performance, uncomment the following line:
+        const devicePixelRatio = this.toNumber("");
+        console.log("devicePixelRatio", devicePixelRatio);
+        if (this.isNumber(devicePixelRatio)) {
+            config.devicePixelRatio = this.toNumber(devicePixelRatio);
+        }
+
+        loadingBar.style.display = "block";
+        const script = document.createElement("script");
+        script.src = loaderUrl;
+        script.onload = () => {
+            createUnityInstance(canvas, config, (progress) => {
+                progressBarFull.style.width = 100 * progress + "%";
+            }).then((unityInstance) => {
+                loadingBar.style.display = "none";
+
+            }).catch((message) => {
+                alert(message);
+            });
+        };
+        document.body.appendChild(script);
+    },
+
+    isMobile: function () {
+        return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    },
+
+    isEmpty: function (value) {
+        return value === undefined || value === null || value === "";
+    },
+
+    toBoolean: function (value) {
+        return value === true || value === "true" || value === 1 || value === "1" || value === "True";
+    },
+
+    isNumber: function (value) {
+        return typeof value === 'number' && !isNaN(value);
+    },
+
+    toNumber: function (value) {
+        function handleMathExpression(str) {
+            const mathMatch = str.match(/^(\d*\.?\d+)\s*([+\-*/])\s*(\d*\.?\d+)$/);
+            if (!mathMatch) return null;
+
+            const a = parseFloat(mathMatch[1]);
+            const operator = mathMatch[2];
+            const b = parseFloat(mathMatch[3]);
+
+            const operators = {
+                '+': function (a, b) { return a + b; },
+                '-': function (a, b) { return a - b; },
+                '*': function (a, b) { return a * b; },
+                '/': function (a, b) { return b !== 0 ? a / b : NaN; }
             };
-
-
-            /*
-             * -------------------------------------------------
-             * STEP 5
-             *
-             * Load Unity loader
-             * -------------------------------------------------
-             */
-
-            const script =
-                document.createElement(
-                    "script"
-                );
-
-
-            script.src =
-                loaderUrl;
-
-
-            script.onload =
-                function () {
-
-                    console.log(
-                        "Unity loader loaded."
-                    );
-
-
-                    createUnityInstance(
-                        canvas,
-                        config,
-                        function (progress) {
-
-                            progressBarFull.style.width =
-                                (
-                                    progress *
-                                    100
-                                ) +
-                                "%";
-
-                        }
-                    )
-
-                    .then(
-                        function (
-                            unityInstance
-                        ) {
-
-                            console.log(
-                                "Unity loaded successfully!"
-                            );
-
-
-                            loadingBar.style.display =
-                                "none";
-
-                        }
-                    )
-
-                    .catch(
-                        function (
-                            error
-                        ) {
-
-                            console.error(
-                                "Unity failed:",
-                                error
-                            );
-
-
-                            loadingBar.style.display =
-                                "none";
-
-                        }
-                    );
-
-                };
-
-
-            script.onerror =
-                function () {
-
-                    throw new Error(
-                        "Failed to load Unity loader:\n" +
-                        loaderUrl
-                    );
-
-                };
-
-
-            document.body.appendChild(
-                script
-            );
-
-
-        } catch (error) {
-
-            console.error(
-                "Failed to load split RAR/WASM:",
-                error
-            );
-
-
-            loadingBar.style.display =
-                "none";
-
-
-            alert(
-                "Failed to load game:\n\n" +
-                error.message
-            );
-
+            return operators[operator](a, b);
         }
 
-    }
+        function convertToNumber(str) {
+            const num = parseFloat(str);
+            return isNaN(num) ? 0 : num;
+        }
+
+        // Handle basic type checks first.
+        if (this.isNumber(value)) return value;
+        if (this.isEmpty(value)) return 0;
+
+        // Convert to string and handle empty case.
+        var str = String(value).trim();
+        if (str === '') return 0;
+
+        // Try math expression or simple number conversion.
+        return handleMathExpression(str) || convertToNumber(str);
+    },
 
 };
 
-
-/*
- * Start.
- */
-
+// Apply common fixes.
 unityApp.applyCommonFixes();
 
+// Lock rotation.
 unityApp.tryRotationLock();
 
+// Lock aspect ratio.
 unityApp.tryLockAspectRatio();
 
+// Automatically start after script is loaded.
 unityApp.startLoading();
-
 </script>
-
 </body>
 </html>
