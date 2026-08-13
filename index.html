@@ -222,13 +222,13 @@
 
         const buildUrl = "Build";
         var WASM_FILE = "knockout[8]-mirraSDK[5.1.2].wasm";
-        var WASM_PARTS = 4;  
+        var WASM_PARTS = .part04;  
         const loaderUrl = buildUrl + "/knockout[8]-mirraSDK[5.1.2].loader.js";
         const config = {
             arguments: [],
             dataUrl: buildUrl + "/knockout[8]-mirraSDK[5.1.2].data.br",
             frameworkUrl: buildUrl + "/knockout[8]-mirraSDK[5.1.2].framework.js.br",
-            codeUrl: buildUrl + WASM_FILE,
+            codeUrl: buildUrl + WASM_FILE + WASM_PARTS,
             streamingAssetsUrl: "StreamingAssets",
             companyName: "DefaultCompany",
             productName: "knockout",
