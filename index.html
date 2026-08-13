@@ -220,14 +220,15 @@
         const progressBarFull = document.querySelector("#unity-progress-bar-full");
 
         const buildUrl = "Build";
-        var WASM_FILE = "/knockout[8]-mirraSDK[5.1.2].wasm";
-        var WASM_PARTS = ".part04";  
         const loaderUrl = buildUrl + "/knockout[8]-mirraSDK[5.1.2].loader.js";
         const config = {
             arguments: [],
             dataUrl: buildUrl + "/knockout[8]-mirraSDK[5.1.2].data.br",
             frameworkUrl: buildUrl + "/knockout[8]-mirraSDK[5.1.2].framework.js.br",
-            codeUrl: buildUrl + WASM_FILE + WASM_PARTS,
+            codeUrl: buildUrl + "/knockout[8]-mirraSDK[5.1.2].wasm.part01",
+            codeUrl: buildUrl + "/knockout[8]-mirraSDK[5.1.2].wasm.part02",
+            codeUrl: buildUrl + "/knockout[8]-mirraSDK[5.1.2].wasm.part03",
+            codeUrl: buildUrl + "/knockout[8]-mirraSDK[5.1.2].wasm.part04",
             streamingAssetsUrl: "StreamingAssets",
             companyName: "DefaultCompany",
             productName: "knockout",
